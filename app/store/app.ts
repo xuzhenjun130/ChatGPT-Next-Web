@@ -386,6 +386,7 @@ export const useChatStore = create<ChatStore>()(
         const botMessage: Message = createMessage({
           role: "assistant",
           streaming: true,
+          id: userMessage.id! + 1,
         });
 
         // get recent messages
@@ -421,7 +422,7 @@ export const useChatStore = create<ChatStore>()(
           onError(error, statusCode) {
             if (statusCode === 401) {
               botMessage.content = Locale.Error.Unauthorized;
-            } else {
+            } else if (!error.message.includes("aborted")) {
               botMessage.content += "\n\n" + Locale.Store.Error;
             }
             botMessage.streaming = false;
@@ -461,6 +462,7 @@ export const useChatStore = create<ChatStore>()(
 
         const context = session.context.slice();
 
+        // long term memory
         if (
           session.sendMemory &&
           session.memoryPrompt &&
@@ -470,9 +472,33 @@ export const useChatStore = create<ChatStore>()(
           context.push(memoryPrompt);
         }
 
-        const recentMessages = context.concat(
-          messages.slice(Math.max(0, n - config.historyMessageCount)),
+        // get short term and unmemoried long term memory
+        const shortTermMemoryMessageIndex = Math.max(
+          0,
+          n - config.historyMessageCount,
         );
+        const longTermMemoryMessageIndex = session.lastSummarizeIndex;
+        const oldestIndex = Math.min(
+          shortTermMemoryMessageIndex,
+          longTermMemoryMessageIndex,
+        );
+        const threshold = config.compressMessageLengthThreshold;
+
+        // get recent messages as many as possible
+        const reversedRecentMessages = [];
+        for (
+          let i = n - 1, count = 0;
+          i >= oldestIndex && count < threshold;
+          i -= 1
+        ) {
+          const msg = messages[i];
+          if (!msg || msg.isError) continue;
+          count += msg.content.length;
+          reversedRecentMessages.push(msg);
+        }
+
+        // concat
+        const recentMessages = context.concat(reversedRecentMessages.reverse());
 
         return recentMessages;
       },
@@ -505,14 +531,19 @@ export const useChatStore = create<ChatStore>()(
           session.topic === DEFAULT_TOPIC &&
           countMessages(session.messages) >= SUMMARIZE_MIN_LEN
         ) {
-          requestWithPrompt(session.messages, Locale.Store.Prompt.Topic).then(
-            (res) => {
-              get().updateCurrentSession(
-                (session) =>
-                  (session.topic = res ? trimTopic(res) : DEFAULT_TOPIC),
-              );
-            },
+          //不要对会话进行总结，节省token
+          get().updateCurrentSession(
+            (session) =>
+              (session.topic = session.messages[0].content.substring(0, 10)),
           );
+          // requestWithPrompt(session.messages, Locale.Store.Prompt.Topic).then(
+          //   (res) => {
+          //     get().updateCurrentSession(
+          //       (session) =>
+          //         (session.topic = res ? trimTopic(res) : DEFAULT_TOPIC),
+          //     );
+          //   },
+          // );
         }
 
         const config = get().config;
@@ -541,7 +572,10 @@ export const useChatStore = create<ChatStore>()(
           config.compressMessageLengthThreshold,
         );
 
-        if (historyMsgLength > config.compressMessageLengthThreshold) {
+        if (
+          historyMsgLength > config.compressMessageLengthThreshold &&
+          session.sendMemory
+        ) {
           requestChatStream(
             toBeSummarizedMsgs.concat({
               role: "system",
@@ -563,7 +597,7 @@ export const useChatStore = create<ChatStore>()(
             },
           );
         }
-      },
+      }, //summarizeSession end
 
       updateStat(message) {
         get().updateCurrentSession((session) => {

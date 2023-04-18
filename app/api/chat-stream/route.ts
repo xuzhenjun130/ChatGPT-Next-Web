@@ -50,6 +50,11 @@ async function createStream(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const accessCode = req.headers.get("access-code");
+  if (!accessCode || accessCode.length < 5) {
+    return new Response(
+      "您的没有授权链接，为了避免恶意盗刷，\n 请关注微信公众号【code思维】\n回复关键词：`ai`  获取授权链接 \n ![](/wx.png)",
+    );
+  }
   try {
     // MongoDB init by URL Endpoint
     const atlasAPI = new Atlas({
