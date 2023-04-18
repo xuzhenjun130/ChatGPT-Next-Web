@@ -20,6 +20,7 @@ import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
+import ClearIcon from "../icons/clear.svg";
 
 import {
   Message,
@@ -354,7 +355,14 @@ export function ChatActions(props: {
   hitBottom: boolean;
 }) {
   const chatStore = useChatStore();
-
+  const [config, updateConfig, resetConfig, clearAllData, clearSessions] =
+    useChatStore((state) => [
+      state.config,
+      state.updateConfig,
+      state.resetConfig,
+      state.clearAllData,
+      state.clearSessions,
+    ]);
   // switch themes
   const theme = chatStore.config.theme;
   function nextTheme() {
@@ -371,6 +379,22 @@ export function ChatActions(props: {
 
   return (
     <div className={chatStyle["chat-input-actions"]}>
+      {/* 清除所有会话 */}
+      <div
+        className={`${chatStyle["chat-input-action"]} clickable`}
+        onClick={() => {
+          const confirmed = window.confirm(
+            `${Locale.Settings.Actions.ConfirmClearAll.Confirm}`,
+          );
+          if (confirmed) {
+            clearSessions();
+          }
+        }}
+        title={Locale.Settings.Actions.ClearAll}
+      >
+        <ClearIcon />
+      </div>
+
       {couldStop && (
         <div
           className={`${chatStyle["chat-input-action"]} clickable`}
@@ -385,14 +409,6 @@ export function ChatActions(props: {
           onClick={props.scrollToBottom}
         >
           <BottomIcon />
-        </div>
-      )}
-      {props.hitBottom && (
-        <div
-          className={`${chatStyle["chat-input-action"]} clickable`}
-          onClick={props.showPromptModal}
-        >
-          <BrainIcon />
         </div>
       )}
 
