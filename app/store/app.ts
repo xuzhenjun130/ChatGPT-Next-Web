@@ -63,6 +63,7 @@ export interface ChatConfig {
     max_tokens: number;
     presence_penalty: number;
   };
+  chat_type: string; //聊天类型
 }
 
 export type ModelConfig = ChatConfig["modelConfig"];
@@ -152,6 +153,7 @@ const DEFAULT_CONFIG: ChatConfig = {
     max_tokens: 1500,
     presence_penalty: 0,
   },
+  chat_type: "qa", //chat or qa
 };
 
 export interface ChatStat {
@@ -376,7 +378,7 @@ export const useChatStore = create<ChatStore>()(
         get().updateStat(message);
         get().summarizeSession();
       },
-
+      //发送聊天消息
       async onUserInput(content) {
         const userMessage: Message = createMessage({
           role: "user",
@@ -461,6 +463,10 @@ export const useChatStore = create<ChatStore>()(
         const n = messages.length;
 
         const context = session.context.slice();
+        //qa mode, only show last message
+        if (config.chat_type === "qa") {
+          config.historyMessageCount = 1;
+        }
 
         // long term memory
         if (

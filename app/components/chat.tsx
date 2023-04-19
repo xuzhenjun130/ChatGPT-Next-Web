@@ -373,6 +373,12 @@ export function ChatActions(props: {
     chatStore.updateConfig((config) => (config.theme = nextTheme));
   }
 
+  const chat_type = chatStore.config.chat_type;
+
+  function handleChatTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    chatStore.updateConfig((config) => (config.chat_type = event.target.value));
+  }
+
   // stop all responses
   const couldStop = ControllerPool.hasPending();
   const stopAll = () => ControllerPool.stopAll();
@@ -423,6 +429,30 @@ export function ChatActions(props: {
         ) : theme === Theme.Dark ? (
           <DarkIcon />
         ) : null}
+      </div>
+      <div className={`${chatStyle["chat-input-action"]} clickable`}>
+        <input
+          type="radio"
+          name="chat_context"
+          id="chat_type1"
+          value="chat"
+          checked={chat_type == "chat"}
+          onChange={handleChatTypeChange}
+        />
+        <label htmlFor="chat_type1" title="支持上下文">
+          聊天
+        </label>
+        <input
+          type="radio"
+          name="chat_context"
+          id="chat_type2"
+          value="qa"
+          checked={chat_type == "qa"}
+          onChange={handleChatTypeChange}
+        />
+        <label htmlFor="chat_type2" title="一问一答，节省token，速度更快">
+          问答
+        </label>
       </div>
     </div>
   );
