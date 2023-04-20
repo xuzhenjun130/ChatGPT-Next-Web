@@ -1,5 +1,12 @@
 import { useDebounce, useDebouncedCallback } from "use-debounce";
-import { memo, useState, useRef, useEffect, useLayoutEffect } from "react";
+import {
+  memo,
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  ChangeEventHandler,
+} from "react";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -375,9 +382,9 @@ export function ChatActions(props: {
 
   const chat_type = chatStore.config.chat_type;
 
-  function handleChatTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    chatStore.updateConfig((config) => (config.chat_type = event.target.value));
-  }
+  const handleChatTypeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    chatStore.updateConfig((config) => (config.chat_type = e.target.value));
+  };
 
   // stop all responses
   const couldStop = ControllerPool.hasPending();
