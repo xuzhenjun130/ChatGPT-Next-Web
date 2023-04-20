@@ -469,7 +469,7 @@ export const useChatStore = create<ChatStore>()(
         if (config.chat_type === "qa") {
           config.historyMessageCount = 1;
         } else {
-          config.historyMessageCount = config.historyMessageCountDefault;
+          config.historyMessageCount = 3;
         }
         console.log(config.historyMessageCount, config.chat_type);
         // long term memory
