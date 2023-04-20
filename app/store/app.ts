@@ -44,7 +44,8 @@ export enum Theme {
 }
 
 export interface ChatConfig {
-  historyMessageCount: number; // -1 means all
+  historyMessageCountDefault: number; // 默认历史消息数量
+  historyMessageCount: number; // -1 means all 动态历史消息数量
   compressMessageLengthThreshold: number;
   sendBotMessages: boolean; // send bot's message or not
   submitKey: SubmitKey;
@@ -134,6 +135,7 @@ export const ModalConfigValidator = {
 };
 
 const DEFAULT_CONFIG: ChatConfig = {
+  historyMessageCountDefault: 3,
   historyMessageCount: 3,
   compressMessageLengthThreshold: 800,
   sendBotMessages: true as boolean,
@@ -466,8 +468,10 @@ export const useChatStore = create<ChatStore>()(
         //qa mode, only show last message
         if (config.chat_type === "qa") {
           config.historyMessageCount = 1;
+        } else {
+          config.historyMessageCount = config.historyMessageCountDefault;
         }
-
+        console.log(config.historyMessageCount, config.chat_type);
         // long term memory
         if (
           session.sendMemory &&
