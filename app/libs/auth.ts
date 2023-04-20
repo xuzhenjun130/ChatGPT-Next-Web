@@ -15,7 +15,9 @@ export class AuthError extends Error {}
 export async function verifyAuth(req: NextRequest) {
   const token = req.cookies.get("user_token")?.value;
 
-  if (!token) throw new AuthError("Missing user token");
+  if (!token) {
+    return false;
+  }
 
   try {
     const verified = await jwtVerify(
@@ -24,7 +26,7 @@ export async function verifyAuth(req: NextRequest) {
     );
     return verified.payload as UserJwtPayload;
   } catch (err) {
-    throw new AuthError("Your token has expired.");
+    return false;
   }
 }
 

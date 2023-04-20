@@ -454,7 +454,7 @@ export function ChatActions(props: {
           name="chat_context"
           id="chat_type2"
           value="qa"
-          checked={chat_type == "qa"}
+          checked={chat_type == "qa" || !chat_type}
           onChange={handleChatTypeChange}
         />
         <label htmlFor="chat_type2" title="一问一答，节省token，速度更快">
