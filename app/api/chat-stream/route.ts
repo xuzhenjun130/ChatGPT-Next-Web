@@ -2,6 +2,7 @@ import { createParser } from "eventsource-parser";
 import { NextRequest } from "next/server";
 import { requestOpenai } from "../common";
 import Atlas from "atlas-fetch-data-api";
+import * as auth from "../..//libs/auth";
 
 async function createStream(req: NextRequest) {
   const encoder = new TextEncoder();
@@ -49,42 +50,53 @@ async function createStream(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  //验证jwt token
+  const decoded = await auth.verifyAuth(req);
+
   const accessCode = req.headers.get("access-code");
-  if (!accessCode || accessCode.length < 5) {
+  if (!decoded && (!accessCode || accessCode.length < 5)) {
     return new Response(
       "您的没有授权链接，为了避免恶意盗刷，\n 请关注微信公众号【code思维】\n回复关键词：`ai`  获取授权链接 \n ![](/wx.png)",
     );
   }
   try {
-    // MongoDB init by URL Endpoint
-    const atlasAPI = new Atlas({
-      dataSource: "Cluster0",
-      database: "chat_db",
-      apiKey: process.env.MONGODB_KEY + "",
-      apiUrl: process.env.MONGODB_URI + "",
-    });
+    const headers = new Headers();
+    console.log("decode:", decoded);
+    if (!decoded) {
+      console.log("没有jwt验证成功，则需要验证数据库");
+      // MongoDB init by URL Endpoint
+      const atlasAPI = new Atlas({
+        dataSource: "Cluster0",
+        database: "chat_db",
+        apiKey: process.env.MONGODB_KEY + "",
+        apiUrl: process.env.MONGODB_URI + "",
+      });
 
-    let userRes = await atlasAPI.findOne({
-      collection: "users",
-      filter: { key: accessCode },
-    });
-    const tips =
-      "您的链接授权已过期，为了避免恶意盗刷，\n 请关注微信公众号【code思维】\n回复关键词：`ai`  获取授权链接 \n ![](/wx.png)";
+      let userRes = await atlasAPI.findOne({
+        collection: "users",
+        filter: { key: accessCode },
+      });
+      const tips =
+        "您的链接授权已过期，为了避免恶意盗刷，\n 请关注微信公众号【code思维】\n回复关键词：`ai`  获取授权链接 \n ![](/wx.png)";
 
-    if (!userRes || !userRes.document) {
-      return new Response(tips);
-    }
+      if (!userRes || !userRes.document) {
+        return new Response(tips);
+      }
 
-    const user = userRes.document;
+      const user = userRes.document;
 
-    console.log(
-      new Date(user["expire"]).getTime() < new Date().getTime(),
-      user["expire"],
-      new Date().getTime(),
-    );
-    if (new Date(user["expire"]).getTime() < new Date().getTime()) {
-      // 判断用户是否过期
-      return new Response(tips);
+      console.log(
+        new Date(user["expire"]).getTime() < new Date().getTime(),
+        user["expire"],
+        new Date().getTime(),
+      );
+      if (new Date(user["expire"]).getTime() < new Date().getTime()) {
+        // 判断用户是否过期
+        return new Response(tips);
+      }
+      //生成jwt token ，存放cookie
+      const token = await auth.genToken(user["username"]);
+      headers.set("Set-Cookie", `user_token=${token}; Path=/; HttpOnly`);
     }
 
     // 创建查询条件
@@ -118,7 +130,7 @@ export async function POST(req: NextRequest) {
     // });
 
     const stream = await createStream(req);
-    return new Response(stream);
+    return new Response(stream, { headers });
   } catch (error) {
     console.error("[Chat Stream]", error);
     return new Response(
