@@ -465,6 +465,10 @@ export const useChatStore = create<ChatStore>()(
         const n = messages.length;
 
         const context = session.context.slice();
+        //增加默认值判断
+        if (!config.chat_type) {
+          config.chat_type = "qa";
+        }
         //qa mode, only show last message
         if (config.chat_type === "qa") {
           config.historyMessageCount = 1;
