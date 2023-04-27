@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-const OPENAI_URL = "api.openai.com";
+const OPENAI_URL = "aidashi.deno.dev";
 const DEFAULT_PROTOCOL = "https";
 const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
 const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
@@ -27,7 +27,9 @@ export async function requestOpenai(req: NextRequest) {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
-      ...(process.env.OPENAI_ORG_ID && { "OpenAI-Organization": process.env.OPENAI_ORG_ID }),
+      ...(process.env.OPENAI_ORG_ID && {
+        "OpenAI-Organization": process.env.OPENAI_ORG_ID,
+      }),
     },
     method: req.method,
     body: req.body,
