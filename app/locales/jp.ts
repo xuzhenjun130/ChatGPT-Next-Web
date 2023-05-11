@@ -69,7 +69,7 @@ const jp: LocaleType = {
       ConfirmClearAll: "すべてのチャットをリセットしてもよろしいですか？",
     },
     Lang: {
-      Name: "Language",
+      Name: "Language", // ATTENTION: if you wanna add a new translation, please do not translate this value, leave it as `Language`
       All: "所有语言",
       Options: {
         cn: "简体中文",
@@ -80,6 +80,8 @@ const jp: LocaleType = {
         tr: "Türkçe",
         jp: "日本語",
         de: "Deutsch",
+        vi: "Vietnamese",
+        ru: "Русский",
       },
     },
     Avatar: "アバター",
