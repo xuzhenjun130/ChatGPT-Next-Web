@@ -1,4 +1,5 @@
 import { SubmitKey } from "../store/config";
+import { isMobileScreen } from "../utils";
 
 const cn = {
   WIP: "该功能仍在开发中……",
@@ -10,7 +11,8 @@ const cn = {
     ChatItemCount: (count: number) => `${count} 条对话`,
   },
   Chat: {
-    SubTitle: (count: number) => `与 ChatGPT 的 ${count} 条对话`,
+    SubTitle: (model: string, count: number) =>
+      `与 ${model} 的 ${count} 条对话`,
     Actions: {
       ChatList: "查看消息列表",
       CompressedHistory: "查看压缩后的历史 Prompt",
@@ -23,6 +25,9 @@ const cn = {
     Rename: "重命名对话",
     Typing: "正在输入…",
     Input: (submitKey: string) => {
+      if (isMobileScreen()) {
+        return "与ta对话吧";
+      }
       var inputHints = `${submitKey} 发送`;
       if (submitKey === String(SubmitKey.Enter)) {
         inputHints += "，Shift + Enter 换行";

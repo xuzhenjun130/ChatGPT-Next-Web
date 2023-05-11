@@ -49,7 +49,7 @@ export function ModelConfigList(props: {
           }}
         ></InputRange>
       </ListItem>
-      <ListItem
+      {/* <ListItem
         title={Locale.Settings.MaxTokens.Title}
         subTitle={Locale.Settings.MaxTokens.SubTitle}
       >
@@ -67,7 +67,7 @@ export function ModelConfigList(props: {
             )
           }
         ></input>
-      </ListItem>
+      </ListItem> */}
       <ListItem
         title={Locale.Settings.PresencePenlty.Title}
         subTitle={Locale.Settings.PresencePenlty.SubTitle}
@@ -89,7 +89,7 @@ export function ModelConfigList(props: {
         ></InputRange>
       </ListItem>
 
-      <ListItem
+      {/* <ListItem
         title={Locale.Settings.HistoryCount.Title}
         subTitle={Locale.Settings.HistoryCount.SubTitle}
       >
@@ -105,9 +105,9 @@ export function ModelConfigList(props: {
             )
           }
         ></InputRange>
-      </ListItem>
+      </ListItem> */}
 
-      <ListItem
+      {/* <ListItem
         title={Locale.Settings.CompressThreshold.Title}
         subTitle={Locale.Settings.CompressThreshold.SubTitle}
       >
@@ -124,8 +124,8 @@ export function ModelConfigList(props: {
             )
           }
         ></input>
-      </ListItem>
-      <ListItem title={Locale.Memory.Title} subTitle={Locale.Memory.Send}>
+      </ListItem> */}
+      {/* <ListItem title={Locale.Memory.Title} subTitle={Locale.Memory.Send}>
         <input
           type="checkbox"
           checked={props.modelConfig.sendMemory}
@@ -135,7 +135,7 @@ export function ModelConfigList(props: {
             )
           }
         ></input>
-      </ListItem>
+      </ListItem> */}
     </>
   );
 }

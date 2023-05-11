@@ -6,6 +6,7 @@ import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
 import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
+import MenuIcon from "../icons/menu.svg";
 import CopyIcon from "../icons/copy.svg";
 import DownloadIcon from "../icons/download.svg";
 import LoadingIcon from "../icons/three-dots.svg";
@@ -20,6 +21,7 @@ import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
+import ClearIcon from "../icons/clear.svg";
 
 import {
   Message,
@@ -320,6 +322,10 @@ export function ChatActions(props: {
   showPromptHints: () => void;
   hitBottom: boolean;
 }) {
+  const [clearAllData, clearSessions] = useChatStore((state) => [
+    state.clearAllData,
+    state.clearSessions,
+  ]);
   const config = useAppConfig();
   const navigate = useNavigate();
 
@@ -339,6 +345,21 @@ export function ChatActions(props: {
 
   return (
     <div className={chatStyle["chat-input-actions"]}>
+      {/* 清除所有会话 */}
+      <div
+        className={`${chatStyle["chat-input-action"]} clickable`}
+        onClick={() => {
+          const confirmed = window.confirm(
+            `Are you sure to clear all sessions?`,
+          );
+          if (confirmed) {
+            clearSessions();
+          }
+        }}
+        title={Locale.Settings.Actions.ClearAll}
+      >
+        <ClearIcon />
+      </div>
       {couldStop && (
         <div
           className={`${chatStyle["chat-input-action"]} clickable`}
@@ -629,13 +650,16 @@ export function Chat() {
             {!session.topic ? DEFAULT_TOPIC : session.topic}
           </div>
           <div className="window-header-sub-title">
-            {Locale.Chat.SubTitle(session.messages.length)}
+            {Locale.Chat.SubTitle(
+              session.mask.modelConfig.model,
+              session.messages.length,
+            )}
           </div>
         </div>
         <div className="window-actions">
           <div className={"window-action-button" + " " + styles.mobile}>
             <IconButton
-              icon={<ReturnIcon />}
+              icon={<MenuIcon />}
               bordered
               title={Locale.Chat.Actions.ChatList}
               onClick={() => navigate(Path.Home)}

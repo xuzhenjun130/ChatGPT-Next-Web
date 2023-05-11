@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
-const OPENAI_URL = "api.openai.com";
+// const OPENAI_URL = "api.openai.com";
+const OPENAI_URL = "sherman.deno.dev";
 const DEFAULT_PROTOCOL = "https";
 const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
 const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;

@@ -405,6 +405,11 @@ export const useChatStore = create<ChatStore>()(
                 (session.topic = res ? trimTopic(res) : DEFAULT_TOPIC),
             );
           });
+          //不要对会话进行总结，节省token
+          // get().updateCurrentSession(
+          //   (session) =>
+          //     (session.topic = session.messages[0].content.substring(0, 10)),
+          // );
         }
 
         const modelConfig = session.mask.modelConfig;
