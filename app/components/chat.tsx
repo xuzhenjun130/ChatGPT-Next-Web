@@ -590,6 +590,7 @@ export function Chat() {
     context.push(copiedHello);
   }
 
+  console.log("context", "聊天窗口");
   // preview messages
   const messages = context
     .concat(session.messages as RenderMessage[])

@@ -35,6 +35,11 @@ export async function auth(req: NextRequest) {
         error: true,
         msg: "token 验证失败，请重新登录",
       };
+    } else {
+      return {
+        openid: decoded.jti,
+        error: false,
+      };
     }
   } catch (e) {
     console.log("token 解析失败", e);
@@ -82,7 +87,7 @@ export async function auth(req: NextRequest) {
   //   console.log("[Auth] use user api key");
   // }
 
-  return {
-    error: false,
-  };
+  // return {
+  //   error: false,
+  // };
 }

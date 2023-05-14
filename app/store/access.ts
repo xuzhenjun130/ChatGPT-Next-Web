@@ -13,6 +13,21 @@ export interface AccessControlStore {
   hideUserApiKey: boolean;
   openaiUrl: string;
 
+  remainderGpt3: number;
+  remainderGpt4: number;
+
+  totalGpt3: number;
+  totalGpt4: number;
+  //更新剩余次数
+  updateRemainderGpt3: (_: number) => void;
+  updateRemainderGpt4: (_: number) => void;
+  //更新总次数
+  updateTotalGpt3: (_: number) => void;
+  updateTotalGpt4: (_: number) => void;
+  //次数减少
+  decrementRemainderGpt3: () => void;
+  decrementRemainderGpt4: () => void;
+
   updateToken: (_: string) => void;
   updateCode: (_: string) => void;
   enabledAccessControl: () => boolean;
@@ -42,6 +57,30 @@ export const useAccessStore = create<AccessControlStore>()(
       needCode: true,
       hideUserApiKey: false,
       openaiUrl: "/api/openai/",
+
+      remainderGpt3: 0,
+      remainderGpt4: 0,
+      totalGpt3: 0,
+      totalGpt4: 0,
+
+      updateRemainderGpt3(remainder: number) {
+        set(() => ({ remainderGpt3: remainder }));
+      },
+      updateRemainderGpt4(remainder: number) {
+        set(() => ({ remainderGpt4: remainder }));
+      },
+      updateTotalGpt3(total: number) {
+        set(() => ({ totalGpt3: total }));
+      },
+      updateTotalGpt4(total: number) {
+        set(() => ({ totalGpt4: total }));
+      },
+      decrementRemainderGpt3() {
+        set((state) => ({ remainderGpt3: state.remainderGpt3 - 1 }));
+      },
+      decrementRemainderGpt4() {
+        set((state) => ({ remainderGpt4: state.remainderGpt4 - 1 }));
+      },
 
       enabledAccessControl() {
         get().fetch();

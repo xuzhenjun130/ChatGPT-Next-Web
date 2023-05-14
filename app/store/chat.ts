@@ -409,19 +409,19 @@ export const useChatStore = create<ChatStore>()(
           session.topic === DEFAULT_TOPIC &&
           countMessages(session.messages) >= SUMMARIZE_MIN_LEN
         ) {
-          requestWithPrompt(session.messages, Locale.Store.Prompt.Topic, {
-            model: "gpt-3.5-turbo",
-          }).then((res) => {
-            get().updateCurrentSession(
-              (session) =>
-                (session.topic = res ? trimTopic(res) : DEFAULT_TOPIC),
-            );
-          });
-          //不要对会话进行总结，节省token
-          // get().updateCurrentSession(
-          //   (session) =>
-          //     (session.topic = session.messages[0].content.substring(0, 10)),
-          // );
+          // requestWithPrompt(session.messages, Locale.Store.Prompt.Topic, {
+          //   model: "gpt-3.5-turbo",
+          // }).then((res) => {
+          //   get().updateCurrentSession(
+          //     (session) =>
+          //       (session.topic = res ? trimTopic(res) : DEFAULT_TOPIC),
+          //   );
+          // });
+          // 不要对会话进行总结，节省token
+          get().updateCurrentSession(
+            (session) =>
+              (session.topic = session.messages[0].content.substring(0, 10)),
+          );
         }
 
         const modelConfig = session.mask.modelConfig;

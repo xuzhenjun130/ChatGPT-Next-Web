@@ -2,6 +2,8 @@ import { createParser } from "eventsource-parser";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../auth";
 import { requestOpenai } from "../../common";
+import { redis } from "../../../redis";
+import { cache_prefix } from "@/app/constant";
 
 async function createStream(res: Response) {
   const encoder = new TextEncoder();
@@ -57,11 +59,26 @@ async function handle(
     });
   }
 
+  // 判断 用户请求次数是否超过限制
+  // const body = await req.json();
+  // console.log("[OpenAI Route] body ", body.model);
+  // const cache = redis();
+  // const key = cache_prefix + authResult.openid;
+  // const data = await cache.get(key);
+  // if (data) {
+  //   const { count } = JSON.parse(data);
+  //   if (count > 100) {
+  //     return NextResponse.json({
+  //       error: "请求次数超过限制",
+  //     });
+  //   }
+  // }
+
   try {
     const api = await requestOpenai(req);
 
     const contentType = api.headers.get("Content-Type") ?? "";
-
+    console.log("contentType", contentType);
     // streaming response
     if (contentType.includes("stream")) {
       const stream = await createStream(api);
