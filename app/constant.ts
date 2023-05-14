@@ -40,3 +40,5 @@ export const NARROW_SIDEBAR_WIDTH = 100;
 export const ACCESS_CODE_PREFIX = "ak-";
 
 export const LAST_INPUT_KEY = "last-input";
+//缓存前缀
+export const cache_prefix = "chat:";

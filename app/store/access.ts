@@ -20,6 +20,18 @@ export interface AccessControlStore {
   fetch: () => void;
 }
 
+// 读取指定名称的 cookie
+function getCookie(name: string) {
+  let cookies = document.cookie.split("; ");
+  for (let i = 0; i < cookies.length; i++) {
+    let parts = cookies[i].split("=");
+    if (parts[0] === name) {
+      return decodeURIComponent(parts[1]);
+    }
+  }
+  return null;
+}
+
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
 
 export const useAccessStore = create<AccessControlStore>()(
@@ -43,12 +55,16 @@ export const useAccessStore = create<AccessControlStore>()(
         set(() => ({ token }));
       },
       isAuthorized() {
-        get().fetch();
-
+        const token = getCookie("user_token");
+        if (!token) {
+          return false;
+        }
+        return true;
+        //get().fetch();
         // has token or has code or disabled access control
-        return (
-          !!get().token || !!get().accessCode || !get().enabledAccessControl()
-        );
+        // return (
+        //   !!get().token || !!get().accessCode || !get().enabledAccessControl()
+        // );
       },
       fetch() {
         if (fetchState > 0) return;

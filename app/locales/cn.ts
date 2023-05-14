@@ -5,14 +5,13 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized:
-      "访问密码不正确或为空，请前往[设置](/#/settings)页输入正确的访问密码，或者填入你自己的 OpenAI API Key。",
+      "您的登录授权已过期，\n 请关注微信公众号【小豹智能】，重新登录![](/q.jpg)",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
   },
   Chat: {
-    SubTitle: (model: string, count: number) =>
-      `与 ${model} 的 ${count} 条对话`,
+    SubTitle: (model: string, count: number) => `${count} 条对话`,
     Actions: {
       ChatList: "查看消息列表",
       CompressedHistory: "查看压缩后的历史 Prompt",
