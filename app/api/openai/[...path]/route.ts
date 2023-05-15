@@ -52,12 +52,12 @@ async function handle(
 ) {
   console.log("[OpenAI Route] params ", params);
 
-  const authResult = await auth(req);
-  if (authResult.error) {
-    return NextResponse.json(authResult, {
-      status: 401,
-    });
-  }
+  // const authResult = await auth(req);
+  // if (authResult.error) {
+  //   return NextResponse.json(authResult, {
+  //     status: 401,
+  //   });
+  // }
 
   // 判断 用户请求次数是否超过限制
   // const body = await req.json();
