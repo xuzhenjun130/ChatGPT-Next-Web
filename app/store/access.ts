@@ -13,6 +13,9 @@ export interface AccessControlStore {
   hideUserApiKey: boolean;
   openaiUrl: string;
 
+  vipExpire: string;
+  updateVipExpire: (_: string) => void;
+
   remainderGpt3: number;
   remainderGpt4: number;
 
@@ -33,6 +36,7 @@ export interface AccessControlStore {
   enabledAccessControl: () => boolean;
   isAuthorized: () => boolean;
   fetch: () => void;
+  fetchUser: () => void;
 }
 
 // 读取指定名称的 cookie
@@ -48,6 +52,7 @@ function getCookie(name: string) {
 }
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
+let fetchStateUser = 0; // 0 not fetch, 1 fetching, 2 done
 
 export const useAccessStore = create<AccessControlStore>()(
   persist(
@@ -62,6 +67,12 @@ export const useAccessStore = create<AccessControlStore>()(
       remainderGpt4: 0,
       totalGpt3: 0,
       totalGpt4: 0,
+
+      vipExpire: "",
+
+      updateVipExpire(ext: string) {
+        set(() => ({ vipExpire: ext }));
+      },
 
       updateRemainderGpt3(remainder: number) {
         set(() => ({ remainderGpt3: remainder }));
@@ -98,12 +109,39 @@ export const useAccessStore = create<AccessControlStore>()(
         if (!token) {
           return false;
         }
+        get().fetchUser();
         return true;
         //get().fetch();
         // has token or has code or disabled access control
         // return (
         //   !!get().token || !!get().accessCode || !get().enabledAccessControl()
         // );
+      },
+      fetchUser() {
+        if (fetchStateUser > 0) return;
+        fetchStateUser = 1;
+        fetch("/api/user", {
+          method: "post",
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              res.json().then((res) => {
+                console.log("[User] got user from server", res);
+                this.updateRemainderGpt3(res.limit["gpt3.5"].remainder);
+                this.updateRemainderGpt4(res.limit["gpt4"].remainder);
+                this.updateTotalGpt3(res.limit["gpt3.5"].total);
+                this.updateTotalGpt4(res.limit["gpt4"].total);
+                this.updateVipExpire(res.limit["vip_expire"]);
+                // set(() => ({ ...res }));
+              });
+            }
+          })
+          .catch(() => {
+            console.error("[User] failed to fetch user");
+          })
+          .finally(() => {
+            fetchStateUser = 2;
+          });
       },
       fetch() {
         if (fetchState > 0) return;

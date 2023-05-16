@@ -158,7 +158,7 @@ const cn = {
       SubTitle: "管理员已开启加密访问",
       Placeholder: "请输入访问密码",
     },
-    Model: "模型 (model)",
+    Model: "模型",
     Temperature: {
       Title: "随机性 (temperature)",
       SubTitle: "值越大，回复越随机",

@@ -1,5 +1,6 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { ALL_MODELS, ModalConfigValidator, ModelConfig } from "../store";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -22,6 +23,8 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import ClearIcon from "../icons/clear.svg";
+import LightningIcon from "../icons/lightning.svg";
+import StarsIcon from "../icons/stars.svg";
 
 import {
   Message,
@@ -53,7 +56,7 @@ import { IconButton } from "./button";
 import styles from "./home.module.scss";
 import chatStyle from "./chat.module.scss";
 
-import { ListItem, Modal, showModal } from "./ui-lib";
+import { ListItem, Modal, showModal, Select } from "./ui-lib";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LAST_INPUT_KEY, Path } from "../constant";
 import { Avatar } from "./emoji";
@@ -641,6 +644,57 @@ export function Chat() {
     },
   });
 
+  const [activeTab, setActiveTab] = useState("tab1");
+
+  let modelSelect = (
+    <ul className="tabs">
+      <li
+        className={activeTab === "tab1" ? "tab active-tab" : "tab"}
+        onClick={() => setActiveTab("tab1")}
+      >
+        <button className="button">
+          <LightningIcon className="lighting" />
+          GPT-3.5
+        </button>
+      </li>
+      <li
+        className={activeTab === "tab2" ? "tab active-tab" : "tab"}
+        onClick={() => setActiveTab("tab2")}
+      >
+        <button className="button">
+          <StarsIcon className="stars" />
+          GPT-4
+        </button>
+      </li>
+    </ul>
+  );
+
+  if (session.messages.length > 0) {
+    if (session.messages[1].model == "gpt-3.5-turbo") {
+      modelSelect = (
+        <ul className="tabs">
+          <li className="tab">
+            <button className="button">
+              <LightningIcon className="lighting" />
+              GPT-3.5
+            </button>
+          </li>
+        </ul>
+      );
+    } else if (session.messages[1].model == "gpt-4") {
+      modelSelect = (
+        <ul className="tabs">
+          <li className="tab">
+            <button className="button">
+              <StarsIcon className="stars" />
+              GPT-4
+            </button>
+          </li>
+        </ul>
+      );
+    }
+  }
+
   return (
     <div className={styles.chat} key={session.id}>
       <div className="window-header">
@@ -699,11 +753,26 @@ export function Chat() {
           )}
         </div>
 
-        <PromptToast
+        {/* <PromptToast
           showToast={!hitBottom}
           showModal={showPromptModal}
           setShowModal={setShowPromptModal}
-        />
+        /> */}
+      </div>
+      <div className="window-header-model">
+        {modelSelect}
+
+        {/* <ListItem title={Locale.Settings.Model} className="model">
+          <Select
+            value={session.messages.at(0)?.model}
+          >
+            {ALL_MODELS.map((v) => (
+              <option value={v.name} key={v.name} disabled={!v.available}>
+                {v.name}
+              </option>
+            ))}
+          </Select>
+        </ListItem> */}
       </div>
 
       <div
