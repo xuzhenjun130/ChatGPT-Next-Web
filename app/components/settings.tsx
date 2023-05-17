@@ -393,7 +393,7 @@ export function Settings() {
             </Select>
           </ListItem>
 
-          <ListItem title={Locale.Settings.Theme}>
+          {/* <ListItem title={Locale.Settings.Theme}>
             <Select
               value={config.theme}
               onChange={(e) => {
@@ -408,9 +408,9 @@ export function Settings() {
                 </option>
               ))}
             </Select>
-          </ListItem>
+          </ListItem> */}
 
-          <ListItem title={Locale.Settings.Lang.Name}>
+          {/* <ListItem title={Locale.Settings.Lang.Name}>
             <Select
               value={getLang()}
               onChange={(e) => {
@@ -423,7 +423,7 @@ export function Settings() {
                 </option>
               ))}
             </Select>
-          </ListItem>
+          </ListItem> */}
 
           <ListItem
             title={Locale.Settings.FontSize.Title}
@@ -479,7 +479,7 @@ export function Settings() {
         </List>
 
         <List>
-          {enabledAccessControl ? (
+          {/* {enabledAccessControl ? (
             <ListItem
               title={Locale.Settings.AccessCode.Title}
               subTitle={Locale.Settings.AccessCode.SubTitle}
@@ -511,7 +511,7 @@ export function Settings() {
                 }}
               />
             </ListItem>
-          ) : null}
+          ) : null} */}
 
           {/* <ListItem
             title={Locale.Settings.Usage.Title}

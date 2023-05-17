@@ -11,7 +11,7 @@ import { trimTopic } from "../utils";
 
 import Locale from "../locales";
 import { showToast } from "../components/ui-lib";
-import { ModelType } from "./config";
+import { ModelType, useAppConfig } from "./config";
 import { createEmptyMask, Mask } from "./mask";
 import { StoreKey } from "../constant";
 
@@ -89,7 +89,7 @@ interface ChatStore {
   deleteSession: (index: number) => void;
   currentSession: () => ChatSession;
   onNewMessage: (message: Message) => void;
-  onUserInput: (content: string) => Promise<void>;
+  onUserInput: (content: string, model: ModelType) => Promise<void>;
   summarizeSession: () => void;
   updateStat: (message: Message) => void;
   updateCurrentSession: (updater: (session: ChatSession) => void) => void;
@@ -236,9 +236,10 @@ export const useChatStore = create<ChatStore>()(
         get().summarizeSession();
       },
 
-      async onUserInput(content) {
+      async onUserInput(content, model) {
         const session = get().currentSession();
-        const modelConfig = session.mask.modelConfig;
+        let modelConfig = session.mask.modelConfig;
+        modelConfig.model = model; // override model，临时修改模型
 
         const userMessage: Message = createMessage({
           role: "user",
@@ -420,7 +421,7 @@ export const useChatStore = create<ChatStore>()(
           // 不要对会话进行总结，节省token
           get().updateCurrentSession(
             (session) =>
-              (session.topic = session.messages[0].content.substring(0, 10)),
+              (session.topic = session.messages[0].content.substring(0, 20)),
           );
         }
 

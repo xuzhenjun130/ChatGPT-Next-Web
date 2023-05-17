@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import fs from "fs/promises";
 
 const RAW_FILE_URL = "https://raw.githubusercontent.com/";
-const MIRRORF_FILE_URL = "https://raw.fgit.ml/";
+const MIRRORF_FILE_URL = "http://raw.fgit.ml/";
 
 const RAW_CN_URL = "PlexPt/awesome-chatgpt-prompts-zh/main/prompts-zh.json";
 const CN_URL = MIRRORF_FILE_URL + RAW_CN_URL;

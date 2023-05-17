@@ -1,6 +1,12 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { ALL_MODELS, ModalConfigValidator, ModelConfig } from "../store";
+import {
+  ALL_MODELS,
+  ModalConfigValidator,
+  ModelConfig,
+  ModelType,
+  useUpdateStore,
+} from "../store";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
@@ -497,11 +503,22 @@ export function Chat() {
       }
     }
   };
+  const [activeTab, setActiveTab] = useState("tab1"); //模型选择
 
   const doSubmit = (userInput: string) => {
     if (userInput.trim() === "") return;
     setIsLoading(true);
-    chatStore.onUserInput(userInput).then(() => setIsLoading(false));
+    let currentModel = "gpt-3.5-turbo" as ModelType;
+    if (activeTab === "tab2") {
+      currentModel = "gpt-4";
+    }
+    //已发送消息，则继续使用消息中的模型
+    if (session.messages.length > 0) {
+      currentModel = session.messages[1].model as ModelType;
+    }
+    chatStore
+      .onUserInput(userInput, currentModel)
+      .then(() => setIsLoading(false));
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
@@ -574,7 +591,17 @@ export function Chat() {
     setIsLoading(true);
     const content = session.messages[userIndex].content;
     deleteMessage(userIndex);
-    chatStore.onUserInput(content).then(() => setIsLoading(false));
+    let currentModel = "gpt-3.5-turbo" as ModelType;
+    if (activeTab === "tab2") {
+      currentModel = "gpt-4";
+    }
+    //已发送消息，则继续使用消息中的模型
+    if (session.messages.length > 0) {
+      currentModel = session.messages[1].model as ModelType;
+    }
+    chatStore
+      .onUserInput(content, currentModel)
+      .then(() => setIsLoading(false));
     inputRef.current?.focus();
   };
 
@@ -593,7 +620,7 @@ export function Chat() {
     context.push(copiedHello);
   }
 
-  console.log("context", "聊天窗口");
+  //console.log("context", "聊天窗口");
   // preview messages
   const messages = context
     .concat(session.messages as RenderMessage[])
@@ -643,25 +670,33 @@ export function Chat() {
       doSubmit(text);
     },
   });
-
-  const [activeTab, setActiveTab] = useState("tab1");
-
+  // 模型选择切换
   let modelSelect = (
     <ul className="tabs">
       <li
         className={activeTab === "tab1" ? "tab active-tab" : "tab"}
-        onClick={() => setActiveTab("tab1")}
+        onClick={() => {
+          setActiveTab("tab1");
+        }}
       >
-        <button className="button">
+        <button
+          className="button"
+          title="速度较快模型，非常适用于大多数日常任务"
+        >
           <LightningIcon className="lighting" />
           GPT-3.5
         </button>
       </li>
       <li
         className={activeTab === "tab2" ? "tab active-tab" : "tab"}
-        onClick={() => setActiveTab("tab2")}
+        onClick={() => {
+          setActiveTab("tab2");
+        }}
       >
-        <button className="button">
+        <button
+          className="button"
+          title="最强模型，非常适合需要创新和高级推理的任务。"
+        >
           <StarsIcon className="stars" />
           GPT-4
         </button>
@@ -759,21 +794,7 @@ export function Chat() {
           setShowModal={setShowPromptModal}
         /> */}
       </div>
-      <div className="window-header-model">
-        {modelSelect}
-
-        {/* <ListItem title={Locale.Settings.Model} className="model">
-          <Select
-            value={session.messages.at(0)?.model}
-          >
-            {ALL_MODELS.map((v) => (
-              <option value={v.name} key={v.name} disabled={!v.available}>
-                {v.name}
-              </option>
-            ))}
-          </Select>
-        </ListItem> */}
-      </div>
+      <div className="window-header-model">{modelSelect}</div>
 
       <div
         className={styles["chat-body"]}
