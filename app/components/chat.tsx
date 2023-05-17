@@ -31,6 +31,7 @@ import StopIcon from "../icons/pause.svg";
 import ClearIcon from "../icons/clear.svg";
 import LightningIcon from "../icons/lightning.svg";
 import StarsIcon from "../icons/stars.svg";
+import AddIcon from "../icons/add.svg";
 
 import {
   Message,
@@ -50,6 +51,7 @@ import {
   selectOrCopy,
   autoGrowTextArea,
   useMobileScreen,
+  isMobileScreen,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -334,6 +336,7 @@ export function ChatActions(props: {
   ]);
   const config = useAppConfig();
   const navigate = useNavigate();
+  const chatStore = useChatStore();
 
   // switch themes
   const theme = config.theme;
@@ -419,6 +422,22 @@ export function ChatActions(props: {
       >
         <MaskIcon />
       </div>
+      {isMobileScreen() && (
+        <div
+          className={`${chatStyle["chat-input-action"]} clickable`}
+          onClick={() => {
+            if (config.dontShowMaskSplashScreen) {
+              chatStore.newSession();
+              navigate(Path.Chat);
+            } else {
+              navigate(Path.NewChat);
+            }
+          }}
+        >
+          <AddIcon />
+          新聊天
+        </div>
+      )}
     </div>
   );
 }
