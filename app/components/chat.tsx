@@ -358,9 +358,7 @@ export function ChatActions(props: {
       <div
         className={`${chatStyle["chat-input-action"]} clickable`}
         onClick={() => {
-          const confirmed = window.confirm(
-            `Are you sure to clear all sessions?`,
-          );
+          const confirmed = window.confirm(`确定要清除所有会话记录吗?`);
           if (confirmed) {
             clearSessions();
           }
