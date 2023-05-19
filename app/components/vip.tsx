@@ -2,6 +2,7 @@ import { IconButton } from "./button";
 import { ErrorBoundary } from "./error";
 import styles from "./vip.module.scss";
 import CloseIcon from "../icons/close.svg";
+import PayIcon from "../icons/pay.svg";
 import { Path } from "../constant";
 import { useNavigate } from "react-router-dom";
 import Locale, { AllLangs, changeLang, getLang } from "../locales";
@@ -39,6 +40,53 @@ export function Vip() {
       </div>
       <div className={styles["vip"]}>
         <div className={styles.container}>
+          <h2>我的额度</h2>
+          <table className={styles["usage-table"]}>
+            <thead>
+              <tr>
+                <th>模型</th>
+                <th>类型</th>
+                <th>剩余</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowSpan={2}>GPT-3.5</td>
+                <td>每日额度</td>
+                <td>
+                  <span>29</span>
+                </td>
+              </tr>
+              <tr>
+                <td>奖励额度</td>
+                <td>
+                  <span>300</span>
+                </td>
+              </tr>
+              <tr>
+                <td rowSpan={2}>GPT-4</td>
+                <td>每日额度</td>
+                <td>
+                  <span>20</span>
+                </td>
+              </tr>
+              <tr>
+                <td>奖励额度</td>
+                <td>
+                  <span>1</span>
+                </td>
+              </tr>
+              <tr>
+                <td colSpan={3}>
+                  <ul>
+                    <li>每日额度: 每日凌晨恢复</li>
+                    <li>奖励额度: 优先扣除，用了就没，次日不会恢复</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
           <div className={styles["pricing-table"]}>
             <div className={styles["pricing-card"]}>
               <h2>免费用户</h2>
@@ -64,55 +112,30 @@ export function Vip() {
             </div>
           </div>
         </div>
-
-        <h2>我的额度</h2>
-        <table className={styles["usage-table"]}>
-          <thead>
-            <tr>
-              <th>模型</th>
-              <th>类型</th>
-              <th>剩余</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td rowSpan={2}>GPT-3.5</td>
-              <td>每日额度</td>
-              <td>
-                <span>29</span>
-              </td>
-            </tr>
-            <tr>
-              <td>奖励额度</td>
-              <td>
-                <span>300</span>
-              </td>
-            </tr>
-            <tr>
-              <td rowSpan={2}>GPT-4</td>
-              <td>每日额度</td>
-              <td>
-                <span>20</span>
-              </td>
-            </tr>
-            <tr>
-              <td>奖励额度</td>
-              <td>
-                <span>1</span>
-              </td>
-            </tr>
-            <tr>
-              <td>每日额度</td>
-              <td>每日凌晨恢复</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>奖励额度</td>
-              <td>优先使用，用了就没，次日不会恢复</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <div className={styles["pay_card"]}>
+          <List>
+            <ListItem title="月付">
+              <IconButton
+                className={styles["price"]}
+                icon={<PayIcon />}
+                text="￥19.99"
+                bordered
+                textClassName={styles["price_num"]}
+                title="月付"
+              />
+            </ListItem>
+            <ListItem title="年付">
+              <IconButton
+                className={styles["price"]}
+                icon={<PayIcon />}
+                text="￥199.9"
+                bordered
+                textClassName={styles["price_num"]}
+                title="年付"
+              />
+            </ListItem>
+          </List>
+        </div>
       </div>
     </ErrorBoundary>
   );

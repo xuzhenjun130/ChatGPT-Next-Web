@@ -7,12 +7,14 @@ export function IconButton(props: {
   icon?: JSX.Element;
   type?: "primary" | "danger";
   text?: string;
+  textClassName?: string;
   bordered?: boolean;
   shadow?: boolean;
   className?: string;
   title?: string;
   disabled?: boolean;
 }) {
+  const textClassName = props.textClassName ?? styles["icon-button-text"];
   return (
     <button
       className={
@@ -37,9 +39,7 @@ export function IconButton(props: {
         </div>
       )}
 
-      {props.text && (
-        <div className={styles["icon-button-text"]}>{props.text}</div>
-      )}
+      {props.text && <div className={textClassName}>{props.text}</div>}
     </button>
   );
 }

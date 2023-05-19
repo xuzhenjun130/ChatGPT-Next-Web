@@ -48,10 +48,14 @@
   width: 100%;
   border-collapse: collapse;
 }
+.usage-table ul {
+  color: #666;
+  font-size: 14px;
+}
 .usage-table th,
 .usage-table td {
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 10px;
   text-align: left;
 }
 .usage-table th {
@@ -61,6 +65,17 @@
 .usage-table td span {
   color: #0070f3;
   font-weight: bold;
+}
+
+.pay_card{
+  margin: 10px 0;
+  .price{
+    color: #e4393c; 
+    font-weight: bold;
+  }
+  .price_num{
+    font-size: 20px;
+  }
 }
 
 @media (min-width: 768px) {
