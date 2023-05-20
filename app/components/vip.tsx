@@ -21,10 +21,11 @@ import {
   showToast,
 } from "./ui-lib";
 import { useEffect, useState } from "react";
-import { copyToClipboard } from "../utils";
+import { copyToClipboard, getCookie } from "../utils";
 import { getHeaders } from "../requests";
 
 function ShareModal(props: { onClose?: () => void }) {
+  const openid = getCookie("openid");
   return (
     <div className="modal-mask">
       <Modal
@@ -36,7 +37,12 @@ function ShareModal(props: { onClose?: () => void }) {
             icon={<CopyIcon />}
             bordered
             text={"复制邀请链接"}
-            onClick={() => copyToClipboard("hello")}
+            onClick={() =>
+              copyToClipboard(
+                "我发现了个可以免费使用chatGPT的公众号【小豹智能】，还支持GPT4，你试试 https://chat.topobao.com/api/share?q=" +
+                  openid,
+              )
+            }
           />,
         ]}
       >

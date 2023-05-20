@@ -4,6 +4,7 @@ import { StoreKey } from "../constant";
 import { getHeaders } from "../requests";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
+import { getCookie } from "../utils";
 
 export interface AccessControlStore {
   accessCode: string;
@@ -37,18 +38,6 @@ export interface AccessControlStore {
   isAuthorized: () => boolean;
   fetch: () => void;
   fetchUser: () => void;
-}
-
-// 读取指定名称的 cookie
-function getCookie(name: string) {
-  let cookies = document.cookie.split("; ");
-  for (let i = 0; i < cookies.length; i++) {
-    let parts = cookies[i].split("=");
-    if (parts[0] === name) {
-      return decodeURIComponent(parts[1]);
-    }
-  }
-  return null;
 }
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done

@@ -174,3 +174,15 @@ export function autoGrowTextArea(dom: HTMLTextAreaElement) {
 export function getCSSVar(varName: string) {
   return getComputedStyle(document.body).getPropertyValue(varName).trim();
 }
+
+// 读取指定名称的 cookie
+export function getCookie(name: string) {
+  let cookies = document.cookie.split("; ");
+  for (let i = 0; i < cookies.length; i++) {
+    let parts = cookies[i].split("=");
+    if (parts[0] === name) {
+      return decodeURIComponent(parts[1]);
+    }
+  }
+  return null;
+}

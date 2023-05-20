@@ -56,6 +56,10 @@ export async function setUserCookie(username: string) {
     200,
     '<script>window.location.href="/#/chat"</script>',
   );
+  res.cookies.set("open_id", username, {
+    // httpOnly: true,
+    maxAge: 60 * 60 * 24, // 24 hours in seconds
+  });
   res.cookies.set("user_token", token, {
     // httpOnly: true,
     maxAge: 60 * 60 * 24, // 24 hours in seconds
