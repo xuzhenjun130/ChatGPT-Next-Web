@@ -249,6 +249,10 @@ div.math {
   align-items: center;
   justify-content: center;
 
+  .price{
+    color:forestgreen;
+  }
+
   @media screen and (max-width: 600px) {
     align-items: flex-end;
   }
