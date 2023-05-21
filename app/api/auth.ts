@@ -42,7 +42,7 @@ export async function auth(req: NextRequest) {
       };
     }
   } catch (e) {
-    console.log("token 解析失败", e);
+    //console.log("token 解析失败", e);
     return {
       error: true,
       msg: "token 验证失败，请重新登录",
