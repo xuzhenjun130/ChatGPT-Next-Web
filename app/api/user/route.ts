@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cache_prefix } from "../../constant";
-import { auth } from "../auth";
-import { redis } from "../../redis";
+import { auth, getUserInfo } from "../auth";
 
 async function handle(req: NextRequest) {
   const authResult = await auth(req);
@@ -10,12 +8,10 @@ async function handle(req: NextRequest) {
       status: 401,
     });
   }
-  const cache = redis();
-  const key = cache_prefix + authResult.openid;
-  const data = await cache.get(key);
+  const userInfo = await getUserInfo(authResult.openid as string);
 
-  if (data) {
-    return NextResponse.json(JSON.parse(data));
+  if (userInfo.open_id) {
+    return NextResponse.json(userInfo);
   }
   return NextResponse.json({
     error: "获取用户信息失败",

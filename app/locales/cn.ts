@@ -5,7 +5,7 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized:
-      "您的登录授权已过期，\n 请关注微信公众号【小豹智能】，重新登录![](/q.jpg)",
+      "您的登录授权已过期，\n 请扫码关注微信公众号【小豹智能】，重新登录!",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,

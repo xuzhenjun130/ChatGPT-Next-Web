@@ -52,6 +52,7 @@ import {
   autoGrowTextArea,
   useMobileScreen,
   isMobileScreen,
+  getQueryParams,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -632,7 +633,14 @@ export function Chat() {
   ) {
     const copiedHello = Object.assign({}, BOT_HELLO);
     if (!accessStore.isAuthorized()) {
-      copiedHello.content = Locale.Error.Unauthorized;
+      //扫码关注公众号
+      let qrcode = "[](/q.jpg)";
+      const q = getQueryParams("q");
+      if (q) {
+        // 有q参数，则是分享链接，动态生成推荐二维码
+        qrcode = "[](/api/share?q=" + q + ")";
+      }
+      copiedHello.content = Locale.Error.Unauthorized + qrcode;
     }
     context.push(copiedHello);
   }

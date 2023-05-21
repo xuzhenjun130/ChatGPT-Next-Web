@@ -91,3 +91,28 @@ export async function auth(req: NextRequest) {
   //   error: false,
   // };
 }
+
+export interface UserInfoInterface {
+  open_id: string;
+  expire_time: string;
+  chat_gpt_3_reward: number;
+  chat_gpt_4_reward: number;
+  chat_gpt_3: number;
+  chat_gpt_4: number;
+}
+
+// 获取用户信息
+export async function getUserInfo(open_id: string) {
+  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/userinfo", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      open_id: open_id,
+    }),
+  });
+  const userRs = await rs.json();
+  const userInfo = userRs["data"] as UserInfoInterface;
+  return userInfo;
+}

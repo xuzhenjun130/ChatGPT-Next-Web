@@ -186,3 +186,25 @@ export function getCookie(name: string) {
   }
   return null;
 }
+
+// url 参数获取
+export function getQueryParams(name: string) {
+  // 获取当前 URL
+  var url = new URL(window.location.href);
+
+  // 获取 URL 查询参数
+  var searchParams = new URLSearchParams(url.search);
+
+  // 获取 q 参数的值
+  return searchParams.get(name);
+}
+
+//用户信息
+export interface UserInfoInterface {
+  open_id: string;
+  expire_time: string;
+  chat_gpt_3_reward: number;
+  chat_gpt_4_reward: number;
+  chat_gpt_3: number;
+  chat_gpt_4: number;
+}

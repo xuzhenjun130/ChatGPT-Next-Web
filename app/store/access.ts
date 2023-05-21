@@ -4,7 +4,7 @@ import { StoreKey } from "../constant";
 import { getHeaders } from "../requests";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
-import { getCookie } from "../utils";
+import { getCookie, getQueryParams } from "../utils";
 
 export interface AccessControlStore {
   accessCode: string;
@@ -95,7 +95,20 @@ export const useAccessStore = create<AccessControlStore>()(
       },
       isAuthorized() {
         const token = getCookie("user_token");
-        if (!token) {
+        const q = getQueryParams("q");
+        if (q && !token) {
+          // 有q参数，但是没有token, 说明是分享第一次进入
+          return false;
+        } else if (!token) {
+          //没有token, 跳转到小程序自动登录
+          const uri = encodeURIComponent(
+            window.location.protocol + "//" + location.host + "/api/wx-login",
+          );
+          const url =
+            "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx991f37ebb3e61d7d&redirect_uri=" +
+            uri +
+            "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
+          window.location.href = url;
           return false;
         }
         get().fetchUser();

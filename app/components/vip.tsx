@@ -25,7 +25,7 @@ import { copyToClipboard, getCookie } from "../utils";
 import { getHeaders } from "../requests";
 
 function ShareModal(props: { onClose?: () => void }) {
-  const openid = getCookie("openid");
+  const openid = getCookie("open_id");
   return (
     <div className="modal-mask">
       <Modal
@@ -39,8 +39,13 @@ function ShareModal(props: { onClose?: () => void }) {
             text={"复制邀请链接"}
             onClick={() =>
               copyToClipboard(
-                "我发现了个可以免费使用chatGPT的公众号【小豹智能】，还支持GPT4，你试试 https://chat.topobao.com/api/share?q=" +
-                  openid,
+                "我发现了个可以免费使用chatGPT的公众号【小豹智能】，还支持GPT4，你试试 " +
+                  location.protocol +
+                  "//" +
+                  location.host +
+                  "/?q=" +
+                  openid +
+                  "#chat",
               )
             }
           />,
