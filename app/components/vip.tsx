@@ -23,6 +23,7 @@ import {
 import { useEffect, useState } from "react";
 import { copyToClipboard, getCookie } from "../utils";
 import { getHeaders } from "../requests";
+import { useAccessStore } from "../store";
 
 function ShareModal(props: { onClose?: () => void }) {
   const openid = getCookie("open_id");
@@ -117,6 +118,8 @@ async function toPay(type: string) {
 }
 
 export function Vip() {
+  const accessStore = useAccessStore();
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://res.wx.qq.com/open/js/jweixin-1.6.0.js";
@@ -168,26 +171,26 @@ export function Vip() {
                 <td rowSpan={2}>GPT-3.5</td>
                 <td>每日额度</td>
                 <td>
-                  <span>29</span>
+                  <span>{accessStore.chat_gpt_3}</span>
                 </td>
               </tr>
               <tr>
                 <td>奖励额度</td>
                 <td>
-                  <span>300</span>
+                  <span>{accessStore.chat_gpt_3_reward}</span>
                 </td>
               </tr>
               <tr>
                 <td rowSpan={2}>GPT-4</td>
                 <td>每日额度</td>
                 <td>
-                  <span>20</span>
+                  <span>{accessStore.chat_gpt_4}</span>
                 </td>
               </tr>
               <tr>
                 <td>奖励额度</td>
                 <td>
-                  <span>1</span>
+                  <span>{accessStore.chat_gpt_4_reward}</span>
                 </td>
               </tr>
               <tr>

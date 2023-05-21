@@ -441,6 +441,32 @@ export function ChatActions(props: {
   );
 }
 
+function LimitTipsModal(props: { onClose?: () => void }) {
+  const navigate = useNavigate();
+  return (
+    <div className="modal-mask">
+      <Modal
+        onClose={props.onClose}
+        title={"您的可用额度不足"}
+        actions={[
+          <IconButton
+            key="copy"
+            icon={<BottomIcon />}
+            bordered
+            text={"查看订阅"}
+            onClick={() => navigate(Path.Vip)}
+          />,
+        ]}
+      >
+        <ul>
+          <li>您可以付费购买</li>
+          <li>或者邀请朋友关注我们的公众号，即可免费获取额度</li>
+        </ul>
+      </Modal>
+    </div>
+  );
+}
+
 export function Chat() {
   type RenderMessage = Message & { preview?: boolean };
 
@@ -521,7 +547,9 @@ export function Chat() {
       }
     }
   };
+  const accessStore = useAccessStore();
   const [activeTab, setActiveTab] = useState("tab1"); //模型选择
+  const [shouldShowLimitTipsModal, setShowLimitTipsModal] = useState(false);
 
   const doSubmit = (userInput: string) => {
     if (userInput.trim() === "") return;
@@ -534,9 +562,41 @@ export function Chat() {
     if (session.messages.length > 0) {
       currentModel = session.messages[1].model as ModelType;
     }
-    chatStore
-      .onUserInput(userInput, currentModel)
-      .then(() => setIsLoading(false));
+    //检查是否有额度
+    if (
+      currentModel == "gpt-3.5-turbo" &&
+      (accessStore.chat_gpt_3 <= 0 || accessStore.chat_gpt_3_reward <= 0)
+    ) {
+      //弹窗提示错误
+      setShowLimitTipsModal(true);
+      return true;
+    }
+    if (
+      currentModel == "gpt-4" &&
+      (accessStore.chat_gpt_4 <= 0 || accessStore.chat_gpt_4_reward <= 0)
+    ) {
+      //弹窗提示错误
+      setShowLimitTipsModal(true);
+      return true;
+    }
+
+    chatStore.onUserInput(userInput, currentModel).then(() => {
+      setIsLoading(false);
+      //扣减额度
+      if (currentModel == "gpt-3.5-turbo") {
+        if (accessStore.chat_gpt_3_reward > 0) {
+          accessStore.decrementChatGpt3Reward();
+        } else {
+          accessStore.decrementChatGpt3();
+        }
+      } else {
+        if (accessStore.chat_gpt_4_reward > 0) {
+          accessStore.decrementChatGpt4Reward();
+        } else {
+          accessStore.decrementChatGpt4();
+        }
+      }
+    });
     localStorage.setItem(LAST_INPUT_KEY, userInput);
     setUserInput("");
     setPromptHints([]);
@@ -624,8 +684,6 @@ export function Chat() {
   };
 
   const context: RenderMessage[] = session.mask.context.slice();
-
-  const accessStore = useAccessStore();
 
   if (
     context.length === 0 &&
@@ -965,6 +1023,9 @@ export function Chat() {
           />
         </div>
       </div>
+      {shouldShowLimitTipsModal && (
+        <LimitTipsModal onClose={() => setShowLimitTipsModal(false)} />
+      )}
     </div>
   );
 }

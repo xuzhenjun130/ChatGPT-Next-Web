@@ -4,6 +4,7 @@ import { auth } from "../../auth";
 import { requestOpenai } from "../../common";
 import { redis } from "../../../redis";
 import { cache_prefix } from "@/app/constant";
+import { ModelType } from "@/app/store";
 
 async function createStream(res: Response) {
   const encoder = new TextEncoder();
@@ -52,27 +53,40 @@ async function handle(
 ) {
   console.log("[OpenAI Route] params ", params);
 
-  // const authResult = await auth(req);
-  // if (authResult.error) {
-  //   return NextResponse.json(authResult, {
-  //     status: 401,
-  //   });
-  // }
+  const authResult = await auth(req);
+  if (authResult.error) {
+    return NextResponse.json(authResult, {
+      status: 401,
+    });
+  }
 
   // 判断 用户请求次数是否超过限制
-  // const body = await req.json();
-  // console.log("[OpenAI Route] body ", body.model);
-  // const cache = redis();
-  // const key = cache_prefix + authResult.openid;
-  // const data = await cache.get(key);
-  // if (data) {
-  //   const { count } = JSON.parse(data);
-  //   if (count > 100) {
-  //     return NextResponse.json({
-  //       error: "请求次数超过限制",
-  //     });
-  //   }
-  // }
+  const body = await req.json();
+
+  const model = body.model as ModelType;
+  let apiModel = "3.5";
+  if (model == "gpt-4") {
+    apiModel = "4";
+  }
+
+  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/record", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      open_id: authResult.openid,
+      chat_gpt_version: apiModel,
+    }),
+  });
+  const recordRs = await rs.json();
+  const num = recordRs.data.remain_num;
+
+  if (num <= 0) {
+    return NextResponse.json({
+      error: "您的额度不足，请求次数超过限制",
+    });
+  }
 
   try {
     const api = await requestOpenai(req);

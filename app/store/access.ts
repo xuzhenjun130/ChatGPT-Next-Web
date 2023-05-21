@@ -4,7 +4,7 @@ import { StoreKey } from "../constant";
 import { getHeaders } from "../requests";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
-import { getCookie, getQueryParams } from "../utils";
+import { UserInfoInterface, getCookie, getQueryParams } from "../utils";
 
 export interface AccessControlStore {
   accessCode: string;
@@ -16,21 +16,23 @@ export interface AccessControlStore {
 
   vipExpire: string;
   updateVipExpire: (_: string) => void;
-
-  remainderGpt3: number;
-  remainderGpt4: number;
-
-  totalGpt3: number;
-  totalGpt4: number;
-  //更新剩余次数
-  updateRemainderGpt3: (_: number) => void;
-  updateRemainderGpt4: (_: number) => void;
-  //更新总次数
-  updateTotalGpt3: (_: number) => void;
-  updateTotalGpt4: (_: number) => void;
+  //每日额度
+  chat_gpt_3_reward: number;
+  chat_gpt_4_reward: number;
+  //奖励额度
+  chat_gpt_3: number;
+  chat_gpt_4: number;
+  //更新奖励额度
+  updateChatGpt3Reward: (_: number) => void;
+  updateChatGpt4Reward: (_: number) => void;
+  //更新每日额度
+  updateChatGpt3: (_: number) => void;
+  updatechatGpt4: (_: number) => void;
   //次数减少
-  decrementRemainderGpt3: () => void;
-  decrementRemainderGpt4: () => void;
+  decrementChatGpt3Reward: () => void;
+  decrementChatGpt4Reward: () => void;
+  decrementChatGpt3: () => void;
+  decrementChatGpt4: () => void;
 
   updateToken: (_: string) => void;
   updateCode: (_: string) => void;
@@ -52,10 +54,10 @@ export const useAccessStore = create<AccessControlStore>()(
       hideUserApiKey: false,
       openaiUrl: "/api/openai/",
 
-      remainderGpt3: 0,
-      remainderGpt4: 0,
-      totalGpt3: 0,
-      totalGpt4: 0,
+      chat_gpt_3_reward: 0,
+      chat_gpt_4_reward: 0,
+      chat_gpt_3: 0,
+      chat_gpt_4: 0,
 
       vipExpire: "",
 
@@ -63,23 +65,29 @@ export const useAccessStore = create<AccessControlStore>()(
         set(() => ({ vipExpire: ext }));
       },
 
-      updateRemainderGpt3(remainder: number) {
-        set(() => ({ remainderGpt3: remainder }));
+      updateChatGpt3Reward(remainder: number) {
+        set(() => ({ chat_gpt_3_reward: remainder }));
       },
-      updateRemainderGpt4(remainder: number) {
-        set(() => ({ remainderGpt4: remainder }));
+      updateChatGpt4Reward(remainder: number) {
+        set(() => ({ chat_gpt_4_reward: remainder }));
       },
-      updateTotalGpt3(total: number) {
-        set(() => ({ totalGpt3: total }));
+      updateChatGpt3(total: number) {
+        set(() => ({ chat_gpt_3: total }));
       },
-      updateTotalGpt4(total: number) {
-        set(() => ({ totalGpt4: total }));
+      updatechatGpt4(total: number) {
+        set(() => ({ chat_gpt_4: total }));
       },
-      decrementRemainderGpt3() {
-        set((state) => ({ remainderGpt3: state.remainderGpt3 - 1 }));
+      decrementChatGpt3Reward() {
+        set((state) => ({ chat_gpt_3_reward: state.chat_gpt_3_reward - 1 }));
       },
-      decrementRemainderGpt4() {
-        set((state) => ({ remainderGpt4: state.remainderGpt4 - 1 }));
+      decrementChatGpt4Reward() {
+        set((state) => ({ chat_gpt_4_reward: state.chat_gpt_4_reward - 1 }));
+      },
+      decrementChatGpt3() {
+        set((state) => ({ chat_gpt_3: state.chat_gpt_3 - 1 }));
+      },
+      decrementChatGpt4() {
+        set((state) => ({ chat_gpt_4: state.chat_gpt_4 - 1 }));
       },
 
       enabledAccessControl() {
@@ -123,17 +131,17 @@ export const useAccessStore = create<AccessControlStore>()(
         if (fetchStateUser > 0) return;
         fetchStateUser = 1;
         fetch("/api/user", {
-          method: "post",
+          method: "get",
         })
           .then((res) => {
             if (res.status === 200) {
-              res.json().then((res) => {
+              res.json().then((res: UserInfoInterface) => {
                 console.log("[User] got user from server", res);
-                this.updateRemainderGpt3(res.limit["gpt3.5"].remainder);
-                this.updateRemainderGpt4(res.limit["gpt4"].remainder);
-                this.updateTotalGpt3(res.limit["gpt3.5"].total);
-                this.updateTotalGpt4(res.limit["gpt4"].total);
-                this.updateVipExpire(res.limit["vip_expire"]);
+                this.updateChatGpt3Reward(res.chat_gpt_3_reward);
+                this.updateChatGpt4Reward(res.chat_gpt_4_reward);
+                this.updateChatGpt3(res.chat_gpt_3);
+                this.updatechatGpt4(res.chat_gpt_4);
+                this.updateVipExpire(res.expire_time);
                 // set(() => ({ ...res }));
               });
             }
