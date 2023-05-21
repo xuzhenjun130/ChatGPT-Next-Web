@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
+import { ModelType } from "../store";
 const serverConfig = getServerSideConfig();
 
 // const OPENAI_URL = "api.openai.com";
@@ -8,8 +9,20 @@ const DEFAULT_PROTOCOL = "https";
 const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
 const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
 
-export async function requestOpenai(req: NextRequest) {
-  const authValue = ("Bearer " + serverConfig.apiKey) as string;
+function getRandomElementFromString(str: string): string {
+  const arr = str.split(",");
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+}
+export async function requestOpenai(req: NextRequest, model: ModelType) {
+  let apiKey = serverConfig.apiKey as string;
+  if (model == "gpt-4") {
+    apiKey = serverConfig.api4Key as string;
+  } else if (apiKey?.indexOf(",") > 0) {
+    apiKey = getRandomElementFromString(apiKey); //gpt3 随机选择一个key
+  }
+
+  const authValue = ("Bearer " + apiKey) as string;
   const openaiPath = `${req.nextUrl.pathname}${req.nextUrl.search}`.replaceAll(
     "/api/openai/",
     "",
