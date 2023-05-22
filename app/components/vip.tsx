@@ -90,13 +90,14 @@ async function toPay(type: string) {
   const order = data.order;
 
   const params = {
-    appId: process.env.APP_ID, // 公众号名称，由商户传入
+    appId: "wx991f37ebb3e61d7d", // 公众号名称，由商户传入
     timeStamp: order.pay_timestamp, // 时间戳，自1970年以来的秒数
     nonceStr: order.nonce_str, // 随机串
     package: "prepay_id=" + order.prepay_id,
     signType: "RSA", // 微信签名方式
     paySign: order.signature, // 微信签名
   };
+  console.log(params);
 
   (window as any).WeixinJSBridge.invoke(
     "getBrandWCPayRequest",
