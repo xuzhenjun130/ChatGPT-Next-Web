@@ -21,16 +21,16 @@ interface Order {
 }
 
 async function handle(req: NextRequest) {
-  // const authResult = await auth(req);
-  // if (authResult.error) {
-  //     return NextResponse.json(authResult, {
-  //         status: 401,
-  //     });
-  // }
+  const authResult = await auth(req);
+  if (authResult.error) {
+    return NextResponse.json(authResult, {
+      status: 401,
+    });
+  }
   const post = await req.json();
   const data = {
     user_note: "chatgpt订单：" + post["type"],
-    open_id: "odq3J5gdP-3VhfgdHclekdYSzbl4",
+    open_id: authResult.openid,
     payment_id: 1,
     order_detail_list: [
       {
