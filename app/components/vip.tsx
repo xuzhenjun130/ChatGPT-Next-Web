@@ -90,7 +90,7 @@ async function toPay(type: string) {
   const order = data.order;
 
   const params = {
-    appId: "", // 公众号名称，由商户传入
+    appId: process.env.APP_ID, // 公众号名称，由商户传入
     timeStamp: order.pay_timestamp, // 时间戳，自1970年以来的秒数
     nonceStr: order.nonce_str, // 随机串
     package: "prepay_id=" + order.prepay_id,
