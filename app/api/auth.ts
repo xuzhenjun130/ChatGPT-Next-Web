@@ -101,18 +101,39 @@ export interface UserInfoInterface {
   chat_gpt_4: number;
 }
 
+// 定义请求返回的数据结构
+interface UserInfoResponse {
+  code: number;
+  msg: string;
+  data: UserInfoInterface;
+}
+
 // 获取用户信息
-export async function getUserInfo(open_id: string) {
-  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/userinfo", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+export async function getUserInfo(open_id: string): Promise<UserInfoInterface> {
+  const response = await fetch(
+    `${process.env.backend_url}/api/v1/gpt/userinfo`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        open_id: open_id,
+      }),
     },
-    body: JSON.stringify({
-      open_id: open_id,
-    }),
-  });
-  const userRs = await rs.json();
-  const userInfo = userRs["data"] as UserInfoInterface;
-  return userInfo;
+  );
+
+  if (response.status !== 200) {
+    // 如果请求失败，抛出一个错误
+    throw new Error(`获取用户信息失败，状态码：${response.status}`);
+  }
+
+  const userInfoResponse = (await response.json()) as UserInfoResponse;
+
+  if (userInfoResponse.code !== 0) {
+    // 如果请求成功但返回的数据不是期望的格式，抛出一个错误
+    throw new Error(`获取用户信息失败，错误信息：${userInfoResponse.msg}`);
+  }
+
+  return userInfoResponse.data;
 }
