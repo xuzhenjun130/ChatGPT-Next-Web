@@ -123,12 +123,11 @@ export async function getUserInfo(open_id: string): Promise<UserInfoInterface> {
     },
   );
 
-  if (response.status !== 200) {
-    // 如果请求失败，抛出一个错误
-    throw new Error(`获取用户信息失败，状态码：${response.status}`);
+  const textBody = await response.text();
+  if (!textBody) {
+    return {} as UserInfoInterface;
   }
-
-  const userInfoResponse = (await response.json()) as UserInfoResponse;
+  const userInfoResponse = JSON.parse(textBody) as UserInfoResponse;
 
   if (userInfoResponse.code !== 200) {
     // 如果请求成功但返回的数据不是期望的格式，抛出一个错误
