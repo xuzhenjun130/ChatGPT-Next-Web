@@ -69,7 +69,7 @@ async function handle(
     apiModel = "4";
   }
 
-  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/record", {
+  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/dialogue", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
