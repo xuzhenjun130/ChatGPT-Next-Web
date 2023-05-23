@@ -565,7 +565,7 @@ export function Chat() {
     //检查是否有额度
     if (
       currentModel == "gpt-3.5-turbo" &&
-      (accessStore.chat_gpt_3 <= 0 || accessStore.chat_gpt_3_reward <= 0)
+      accessStore.chat_gpt_3 + accessStore.chat_gpt_3_reward <= 0
     ) {
       //弹窗提示错误
       setShowLimitTipsModal(true);
@@ -573,7 +573,7 @@ export function Chat() {
     }
     if (
       currentModel == "gpt-4" &&
-      (accessStore.chat_gpt_4 <= 0 || accessStore.chat_gpt_4_reward <= 0)
+      accessStore.chat_gpt_4 + accessStore.chat_gpt_4_reward <= 0
     ) {
       //弹窗提示错误
       setShowLimitTipsModal(true);
