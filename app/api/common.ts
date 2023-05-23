@@ -14,7 +14,11 @@ function getRandomElementFromString(str: string): string {
   const randomIndex = Math.floor(Math.random() * arr.length);
   return arr[randomIndex];
 }
-export async function requestOpenai(req: NextRequest, model: ModelType) {
+export async function requestOpenai(
+  req: NextRequest,
+  model: ModelType,
+  body: any,
+) {
   let apiKey = serverConfig.apiKey as string;
   if (model == "gpt-4") {
     apiKey = serverConfig.api4Key as string;
@@ -55,6 +59,6 @@ export async function requestOpenai(req: NextRequest, model: ModelType) {
     },
     cache: "no-store",
     method: req.method,
-    body: req.body,
+    body: JSON.stringify(body),
   });
 }
