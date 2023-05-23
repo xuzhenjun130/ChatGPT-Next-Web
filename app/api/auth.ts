@@ -130,7 +130,7 @@ export async function getUserInfo(open_id: string): Promise<UserInfoInterface> {
 
   const userInfoResponse = (await response.json()) as UserInfoResponse;
 
-  if (userInfoResponse.code !== 0) {
+  if (userInfoResponse.code !== 200) {
     // 如果请求成功但返回的数据不是期望的格式，抛出一个错误
     throw new Error(`获取用户信息失败，错误信息：${userInfoResponse.msg}`);
   }
