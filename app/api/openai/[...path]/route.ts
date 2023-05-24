@@ -68,11 +68,15 @@ async function handle(
   if (model == "gpt-4") {
     apiModel = "4";
   }
-
-  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/dialogue", {
+  const url = new URL(`${process.env.backend_url}/api/v1/gpt/dialogue`);
+  url.searchParams.append("_t", Date.now().toString());
+  const rs = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
     },
     body: JSON.stringify({
       open_id: authResult.openid,

@@ -39,10 +39,15 @@ async function handle(req: NextRequest) {
       },
     ],
   };
-  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/create_order", {
+  const url = new URL(`${process.env.backend_url}/api/v1/gpt/create_order`);
+  url.searchParams.append("_t", Date.now().toString());
+  const rs = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
     },
     body: JSON.stringify(data),
   });

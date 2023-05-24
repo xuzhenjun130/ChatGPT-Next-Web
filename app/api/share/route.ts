@@ -6,10 +6,15 @@ async function handle(req: NextRequest) {
   const url = new URL(req.url);
   const openid = url.searchParams.get("q");
 
-  const rs = await fetch(process.env.backend_url + "/api/v1/gpt/token", {
+  const url2 = new URL(`${process.env.backend_url}/api/v1/gpt/token`);
+  url2.searchParams.append("_t", Date.now().toString());
+  const rs = await fetch(url2, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
     },
   });
   const orderRs = await rs.json();
@@ -24,20 +29,24 @@ async function handle(req: NextRequest) {
     );
   }
   const token = orderRs["data"]["token"];
-  const rsWx = await fetch(
+  const url3 = new URL(
     "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=" + token,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        expire_seconds: 2592000,
-        action_name: "QR_STR_SCENE",
-        action_info: { scene: { scene_str: openid } },
-      }),
-    },
   );
+  url3.searchParams.append("_t", Date.now().toString());
+  const rsWx = await fetch(url3, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+    body: JSON.stringify({
+      expire_seconds: 2592000,
+      action_name: "QR_STR_SCENE",
+      action_info: { scene: { scene_str: openid } },
+    }),
+  });
 
   const dataRsWx = await rsWx.json();
 
