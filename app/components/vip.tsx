@@ -120,7 +120,7 @@ async function toPay(type: string) {
 
 export function Vip() {
   const accessStore = useAccessStore();
-
+  accessStore.fetchUser();
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://res.wx.qq.com/open/js/jweixin-1.6.0.js";
