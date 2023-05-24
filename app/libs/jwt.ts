@@ -43,7 +43,7 @@ export async function verifyAuth(req: NextRequest) {
 /**
  * Adds the user token cookie to a response.
  */
-export async function setUserCookie(username: string) {
+export async function setUserCookie(username: string, setToken: boolean) {
   const token = await new SignJWT({})
     .setProtectedHeader({ alg: "HS256" })
     .setJti(username)
@@ -60,10 +60,13 @@ export async function setUserCookie(username: string) {
     // httpOnly: true,
     maxAge: 60 * 60 * 24, // 24 hours in seconds
   });
-  res.cookies.set("user_token", token, {
-    // httpOnly: true,
-    maxAge: 60 * 60 * 24, // 24 hours in seconds
-  });
+
+  if (setToken) {
+    res.cookies.set("user_token", token, {
+      // httpOnly: true,
+      maxAge: 60 * 60 * 24, // 24 hours in seconds
+    });
+  }
 
   return res;
 }

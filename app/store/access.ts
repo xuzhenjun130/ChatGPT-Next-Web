@@ -103,13 +103,14 @@ export const useAccessStore = create<AccessControlStore>()(
       },
       isAuthorized() {
         const token = getCookie("user_token");
+        const openId = getCookie("open_id");
         const q = getQueryParams("q");
         const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
         if (q && !token && !shareMark) {
           // 有q参数，但是没有token, 说明是分享第一次进入
           localStorage.setItem(StoreKey.Share, q);
           return false;
-        } else if (!token) {
+        } else if (!token && !openId) {
           //没有token, 跳转到小程序自动登录
           const uri = encodeURIComponent(
             window.location.protocol + "//" + location.host + "/api/wx-login",

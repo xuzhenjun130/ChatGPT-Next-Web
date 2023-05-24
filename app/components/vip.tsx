@@ -26,7 +26,7 @@ import { getHeaders } from "../requests";
 import { useAccessStore } from "../store";
 
 function ShareModal(props: { onClose?: () => void }) {
-  const openid = getCookie("open_id");
+  const openid = getCookie("open_id") as string;
   return (
     <div className="modal-mask">
       <Modal
@@ -45,7 +45,7 @@ function ShareModal(props: { onClose?: () => void }) {
                   "//" +
                   location.host +
                   "/?q=" +
-                  openid +
+                  encodeURIComponent(openid) +
                   "#chat",
               )
             }
@@ -159,6 +159,12 @@ export function Vip() {
       <div className={styles["vip"]}>
         <div className={styles.container}>
           <h2>我的额度</h2>
+          <strong>我的额度</strong>
+          {accessStore.vipExpire && (
+            <div className="window-header-sub-title">
+              到期时间:{accessStore.vipExpire}
+            </div>
+          )}
           <table className={styles["usage-table"]}>
             <thead>
               <tr>

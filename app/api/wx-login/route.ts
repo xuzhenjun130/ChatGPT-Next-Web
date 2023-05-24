@@ -32,12 +32,10 @@ async function handle(req: NextRequest) {
   const userInfo = await getUserInfo(wxData.openid);
   if (userInfo.open_id) {
     //更新用户时间
-    return auth.setUserCookie(wxData.openid);
+    return auth.setUserCookie(wxData.openid, true);
   } else {
     // 关注公众号链接
-    const url =
-      "http://" + process.env.domain + "/q.jpg#​" + wxData.openid + "&";
-    return NextResponse.redirect(url);
+    return auth.setUserCookie(wxData.openid, false);
   }
 }
 
