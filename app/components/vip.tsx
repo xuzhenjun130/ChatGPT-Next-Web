@@ -118,6 +118,24 @@ async function toPay(type: string) {
   );
 }
 
+function convertToStandardDateFormat(dateString: string): string {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1); // Months are zero-based
+  const day = padZero(date.getDate());
+
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
+  const seconds = padZero(date.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function padZero(num: number): string {
+  return num < 10 ? "0" + num : num.toString();
+}
+
 export function Vip() {
   const accessStore = useAccessStore();
   accessStore.fetchUser();
@@ -158,11 +176,10 @@ export function Vip() {
       </div>
       <div className={styles["vip"]}>
         <div className={styles.container}>
-          <h2>我的额度</h2>
           <strong>我的额度</strong>
           {accessStore.vipExpire && (
             <div className="window-header-sub-title">
-              到期时间:{accessStore.vipExpire}
+              到期时间:{convertToStandardDateFormat(accessStore.vipExpire)}
             </div>
           )}
           <table className={styles["usage-table"]}>

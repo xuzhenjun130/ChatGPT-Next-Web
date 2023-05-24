@@ -259,7 +259,7 @@ export function Settings() {
   const customCount = promptStore.getUserPrompts().length ?? 0;
   const [shouldShowPromptModal, setShowPromptModal] = useState(false);
 
-  const showUsage = accessStore.isAuthorized();
+  const showUsage = false; //不显示使用情况
   useEffect(() => {
     // checks per minutes
     checkUpdate();
