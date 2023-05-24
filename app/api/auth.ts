@@ -127,6 +127,7 @@ export async function getUserInfo(open_id: string): Promise<UserInfoInterface> {
   if (!textBody) {
     return {} as UserInfoInterface;
   }
+  console.log("getUserInfo", textBody, open_id);
   const userInfoResponse = JSON.parse(textBody) as UserInfoResponse;
 
   if (userInfoResponse.code !== 200) {

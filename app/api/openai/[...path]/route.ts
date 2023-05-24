@@ -79,7 +79,9 @@ async function handle(
       chat_gpt_version: apiModel,
     }),
   });
-  const recordRs = await rs.json();
+  const textBody = await rs.text();
+  console.log("/api/v1/gpt/dialogue", textBody);
+  const recordRs = JSON.parse(textBody) as any;
   const num = recordRs.data.remain_num;
 
   if (num <= 0) {
