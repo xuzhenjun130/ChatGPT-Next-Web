@@ -84,6 +84,12 @@ async function handle(
     }),
   });
   const textBody = await rs.text();
+  if (!textBody) {
+    return NextResponse.json({
+      error:
+        "获取用户信息失败，请先关注我们的微信公众号号：小豹智能 \n [](/q.jpg)",
+    });
+  }
   console.log("/api/v1/gpt/dialogue", textBody);
   const recordRs = JSON.parse(textBody) as any;
   const num = recordRs.data.remain_num;
