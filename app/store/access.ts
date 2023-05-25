@@ -137,8 +137,8 @@ export const useAccessStore = create<AccessControlStore>()(
         // );
       },
       fetchUser() {
-        // if (fetchStateUser > 0) return;
-        // fetchStateUser = 1;
+        if (fetchStateUser > 0) return;
+        fetchStateUser = 1;
         fetch("/api/user", {
           method: "get",
         })
