@@ -21,6 +21,7 @@ async function handle(req: NextRequest) {
   //获取微信用户信息
   const wxRes = await fetch(wxUrl);
   const wxData = await wxRes.json();
+  console.log("wxData", wxData);
   //判断是否获取到用户信息
   if (wxData.errcode) {
     return NextResponse.json({
@@ -30,6 +31,7 @@ async function handle(req: NextRequest) {
   }
   //获取用户信息
   const userInfo = await getUserInfo(wxData.openid);
+  console.log("userinfo", userInfo);
   if (userInfo.open_id) {
     //更新用户时间
     return auth.setUserCookie(wxData.openid, true);
