@@ -106,6 +106,7 @@ export const useAccessStore = create<AccessControlStore>()(
         const openId = getCookie("open_id");
         const q = getQueryParams("q");
         const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
+        console.log("q", q);
         if (q && !token && !shareMark) {
           // 有q参数，但是没有token, 说明是分享第一次进入
           localStorage.setItem(StoreKey.Share, q);
@@ -122,6 +123,11 @@ export const useAccessStore = create<AccessControlStore>()(
           window.location.href = url;
           return false;
         }
+        const login = getQueryParams("login");
+        if (login) {
+          //查不到用户，需要登录
+          return false;
+        }
         get().fetchUser();
         return true;
         //get().fetch();
@@ -131,8 +137,8 @@ export const useAccessStore = create<AccessControlStore>()(
         // );
       },
       fetchUser() {
-        if (fetchStateUser > 0) return;
-        fetchStateUser = 1;
+        // if (fetchStateUser > 0) return;
+        // fetchStateUser = 1;
         fetch("/api/user", {
           method: "get",
         })
@@ -147,10 +153,14 @@ export const useAccessStore = create<AccessControlStore>()(
                 this.updateVipExpire(res.expire_time);
                 // set(() => ({ ...res }));
               });
+            } else {
+              console.error("[User] failed to fetch user", res.text);
+              location.href = "/?login=1#/chat";
             }
           })
           .catch(() => {
             console.error("[User] failed to fetch user");
+            location.href = "/?login=1#/chat";
           })
           .finally(() => {
             fetchStateUser = 2;

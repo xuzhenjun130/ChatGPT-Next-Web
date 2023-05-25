@@ -32,7 +32,7 @@ export async function auth(req: NextRequest) {
     const decoded = await jwt.verifyAuth(req);
     if (!decoded) {
       return {
-        error: true,
+        error: "token 验证失败，请重新登录",
         msg: "token 验证失败，请重新登录",
       };
     } else {
@@ -44,7 +44,7 @@ export async function auth(req: NextRequest) {
   } catch (e) {
     //console.log("token 解析失败", e);
     return {
-      error: true,
+      error: "token 验证失败，请重新登录",
       msg: "token 验证失败，请重新登录",
     };
   }

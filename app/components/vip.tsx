@@ -83,7 +83,7 @@ async function toPay(type: string) {
   });
   const data = await rs.json();
   if (data.error) {
-    showToast(data.error);
+    showToast(data.error, undefined, 6000);
     return;
   }
 
