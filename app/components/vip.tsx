@@ -81,9 +81,17 @@ async function toPay(type: string) {
       ...getHeaders(),
     },
   });
-  const data = await rs.json();
-  if (data.error) {
-    showToast(data.error, undefined, 6000);
+  const body = await rs.text();
+  console.log("api/pay", body);
+  let data = {} as any;
+  if (body) {
+    data = JSON.parse(body) as any;
+    if (data.error) {
+      showToast(data.error, undefined, 6000);
+      return;
+    }
+  } else {
+    showToast("支付失败,接口错误", undefined, 6000);
     return;
   }
 
