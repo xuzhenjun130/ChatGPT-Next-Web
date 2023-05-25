@@ -46,7 +46,7 @@ function ShareModal(props: { onClose?: () => void }) {
                   location.host +
                   "/?q=" +
                   encodeURIComponent(openid) +
-                  "#chat",
+                  "/#chat",
               )
             }
           />,
