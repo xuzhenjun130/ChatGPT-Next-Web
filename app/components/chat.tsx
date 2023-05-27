@@ -67,7 +67,7 @@ import chatStyle from "./chat.module.scss";
 
 import { ListItem, Modal, showModal, Select } from "./ui-lib";
 import { useLocation, useNavigate } from "react-router-dom";
-import { LAST_INPUT_KEY, Path } from "../constant";
+import { LAST_INPUT_KEY, Path, StoreKey } from "../constant";
 import { Avatar } from "./emoji";
 import { MaskAvatar, MaskConfig } from "./mask";
 import { useMaskStore } from "../store/mask";
@@ -694,9 +694,14 @@ export function Chat() {
       //扫码关注公众号
       let qrcode = "[](/q.jpg)";
       const q = getQueryParams("q");
-      if (q) {
+      const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
+      let shareUser = q;
+      if (shareMark) {
+        shareUser = shareMark;
+      }
+      if (shareUser) {
         // 有q参数，则是分享链接，动态生成推荐二维码
-        qrcode = "[](/api/share?q=" + q + ")";
+        qrcode = "[](/api/share?q=" + shareUser + ")";
       }
       copiedHello.content = Locale.Error.Unauthorized + qrcode;
     }
