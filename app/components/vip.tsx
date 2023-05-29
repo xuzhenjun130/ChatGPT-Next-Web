@@ -22,7 +22,7 @@ import {
 } from "./ui-lib";
 import { useEffect, useState } from "react";
 import { copyToClipboard, getCookie } from "../utils";
-import { getHeaders } from "../requests";
+
 import { useAccessStore } from "../store";
 
 function ShareModal(props: { onClose?: () => void }) {
@@ -77,9 +77,6 @@ async function toPay(type: string) {
   const rs = await fetch("/api/pay", {
     method: "post",
     body: JSON.stringify({ type }),
-    headers: {
-      ...getHeaders(),
-    },
   });
   const body = await rs.text();
   console.log("api/pay", body);

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { StoreKey } from "../constant";
-import { getHeaders } from "../requests";
+import { getHeaders } from "../client/api";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
 import { UserInfoInterface, getCookie, getQueryParams } from "../utils";
@@ -107,6 +107,7 @@ export const useAccessStore = create<AccessControlStore>()(
         const q = getQueryParams("q");
         const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
         console.log("q", q);
+        //return true;
         if (q && !token && !shareMark) {
           // 有q参数，但是没有token, 说明是分享第一次进入
           localStorage.setItem(StoreKey.Share, q);
