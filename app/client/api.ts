@@ -64,7 +64,7 @@ export class ClientApi {
       .concat([
         {
           from: "human",
-          value: "分享来自 微信公众号【小豹智能】",
+          value: "分享来自 微信公众号【code思维】",
         },
         {
           from: "human",
@@ -118,6 +118,8 @@ export function getHeaders() {
       ACCESS_CODE_PREFIX + accessStore.accessCode,
     );
   }
+
+  headers["access-code"] = localStorage.getItem("key") as string;
 
   return headers;
 }

@@ -120,7 +120,7 @@ export function SideBar(props: { className?: string }) {
       }`}
     >
       <div className={styles["sidebar-header"]}>
-        <div className={styles["sidebar-title"]}>小豹智能</div>
+        <div className={styles["sidebar-title"]}>ai大师助手</div>
         <div className={styles["sidebar-sub-title"]}>
           Build your own AI assistant.
         </div>
@@ -179,11 +179,11 @@ export function SideBar(props: { className?: string }) {
               <IconButton icon={<GithubIcon />} shadow />
             </a>
           </div> */}
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <Link to={Path.Vip}>
               <IconButton icon={<VipIcon />} text="我的订阅" />
             </Link>
-          </div>
+          </div> */}
         </div>
         <div>
           <IconButton

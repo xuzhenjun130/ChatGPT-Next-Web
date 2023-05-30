@@ -7,7 +7,7 @@ import { getBuildConfig } from "./config/build";
 const buildConfig = getBuildConfig();
 
 export const metadata = {
-  title: "小豹智能",
+  title: "ai大师助手",
   description: "你的个人AI聊天机器人。",
   viewport: {
     width: "device-width",
@@ -20,7 +20,7 @@ export const metadata = {
   ],
 
   appleWebApp: {
-    title: "小豹智能",
+    title: "ai大师助手",
     statusBarStyle: "default",
   },
 };

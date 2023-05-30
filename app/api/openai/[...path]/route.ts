@@ -2,60 +2,63 @@ import { prettyObject } from "@/app/utils/format";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../auth";
 import { requestOpenai } from "../../common";
-import { ModelType } from "@/app/store";
+import Atlas from "atlas-fetch-data-api";
+import * as jwt from "../../../libs/jwt";
 
 async function handle(
   req: NextRequest,
   { params }: { params: { path: string[] } },
 ) {
   console.log("[OpenAI Route] params ", params);
-
+  const accessCode = req.headers.get("access-code");
   const authResult = await auth(req);
-  if (authResult.error) {
+  if (authResult.error && (!accessCode || accessCode.length < 5)) {
     return NextResponse.json(authResult, {
       status: 401,
     });
   }
+  let token = "";
+  if (!authResult.openid) {
+    console.log("没有jwt验证成功，则需要验证数据库");
+    // MongoDB init by URL Endpoint
+    const atlasAPI = new Atlas({
+      dataSource: "Cluster0",
+      database: "chat_db",
+      apiKey: process.env.MONGODB_KEY + "",
+      apiUrl: process.env.MONGODB_URI + "",
+    });
 
-  // 判断 用户请求次数是否超过限制
-  const body = await req.json();
+    let userRes = await atlasAPI.findOne({
+      collection: "users",
+      filter: { key: accessCode },
+    });
+    const tips =
+      "您的链接授权已过期，为了避免恶意盗刷，\n 请关注微信公众号【code思维】\n回复关键词：`ai`  获取授权链接 \n ![](/wx.png)";
 
-  const model = body.model as ModelType;
-  let apiModel = "3.5";
-  if (model == "gpt-4") {
-    apiModel = "4";
-  }
-  const url = new URL(`${process.env.backend_url}/api/v1/gpt/dialogue`);
-  url.searchParams.append("_t", Date.now().toString());
-  const rs = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-cache",
-      Pragma: "no-cache",
-      Expires: "0",
-    },
-    body: JSON.stringify({
-      open_id: authResult.openid,
-      chat_gpt_version: apiModel,
-    }),
-  });
-  const textBody = await rs.text();
-  if (!textBody) {
-    return new Response(
-      "获取用户信息失败，请先关注我们的微信公众号号：小豹智能 \n ![](/q.jpg)",
+    if (!userRes || !userRes.document) {
+      return new Response(tips);
+    }
+
+    const user = userRes.document;
+
+    console.log(
+      new Date(user["expire"]).getTime() < new Date().getTime(),
+      user["expire"],
+      new Date().getTime(),
     );
-  }
-  console.log("/api/v1/gpt/dialogue", textBody);
-  const recordRs = JSON.parse(textBody) as any;
-  const num = recordRs.data.remain_num;
-
-  if (num <= 0) {
-    return new Response("您的额度不足，请求次数超过限制");
+    if (new Date(user["expire"]).getTime() < new Date().getTime()) {
+      // 判断用户是否过期
+      return new Response(tips);
+    }
+    token = await jwt.genToken(user["username"]);
   }
 
   try {
-    return await requestOpenai(req, model, body);
+    const res = await requestOpenai(req);
+    if (token) {
+      res.headers.set("access-token", token);
+    }
+    return res;
   } catch (e) {
     console.error("[OpenAI] ", e);
     return NextResponse.json(prettyObject(e));

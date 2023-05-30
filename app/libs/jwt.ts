@@ -40,6 +40,14 @@ export async function verifyAuth(req: NextRequest) {
   }
 }
 
+export async function genToken(username: string) {
+  return await new SignJWT({})
+    .setProtectedHeader({ alg: "HS256" })
+    .setJti(username)
+    .setIssuedAt()
+    .setExpirationTime("24h")
+    .sign(new TextEncoder().encode(process.env.API_KEY));
+}
 /**
  * Adds the user token cookie to a response.
  */

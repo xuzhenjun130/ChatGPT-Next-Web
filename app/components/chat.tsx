@@ -914,7 +914,7 @@ export function Chat() {
           setShowModal={setShowPromptModal}
         /> */}
       </div>
-      <div className="window-header-model">{modelSelect}</div>
+      {/* <div className="window-header-model">{modelSelect}</div> */}
 
       <div
         className={styles["chat-body"]}

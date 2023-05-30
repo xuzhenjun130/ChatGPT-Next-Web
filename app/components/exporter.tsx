@@ -433,7 +433,7 @@ export function ImagePreviewer(props: {
           </div>
 
           <div>
-            <div className={styles["main-title"]}>小豹智能</div>
+            <div className={styles["main-title"]}>code思维</div>
             <div className={styles["sub-title"]}>微信公众号</div>
             <div className={styles["icons"]}>
               <ExportAvatar avatar={config.avatar} />

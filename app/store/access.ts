@@ -107,7 +107,7 @@ export const useAccessStore = create<AccessControlStore>()(
         const q = getQueryParams("q");
         const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
         console.log("q", q);
-        //return true;
+        return true;
         if (q && !token && !shareMark) {
           // 有q参数，但是没有token, 说明是分享第一次进入
           localStorage.setItem(StoreKey.Share, q);

@@ -14,20 +14,11 @@ function getRandomElementFromString(str: string): string {
   return arr[randomIndex];
 }
 
-export async function requestOpenai(
-  req: NextRequest,
-  model: ModelType,
-  body: any,
-) {
+export async function requestOpenai(req: NextRequest) {
   const controller = new AbortController();
   const serverConfig = getServerSideConfig();
   let apiKey = serverConfig.apiKey as string;
-  if (model == "gpt-4") {
-    apiKey = serverConfig.api4Key as string;
-  } else if (apiKey?.indexOf(",") > 0) {
-    apiKey = getRandomElementFromString(apiKey); //gpt3 随机选择一个key
-  }
-
+  apiKey = getRandomElementFromString(apiKey); //随机选取一个key
   const authValue = ("Bearer " + apiKey) as string;
   const openaiPath = `${req.nextUrl.pathname}${req.nextUrl.search}`.replaceAll(
     "/api/openai/",
@@ -62,7 +53,7 @@ export async function requestOpenai(
     },
     cache: "no-store",
     method: req.method,
-    body: JSON.stringify(body),
+    body: req.body,
     signal: controller.signal,
   };
 

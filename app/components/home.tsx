@@ -24,6 +24,16 @@ import {
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 
+if (typeof window !== "undefined") {
+  const hash = window.location.hash.substr(1); // 获取 hash 值，去掉 #
+  const params = new URLSearchParams(hash); // 创建 URLSearchParams 对象
+  const key = params.get("key"); // 获取 key 参数
+  if (key) {
+    localStorage.setItem("key", key);
+    window.location.href = "/#/chat"; // 跳转到 chat 页面
+  }
+}
+
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"] + " no-dark"}>
@@ -52,6 +62,7 @@ const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
 const Vip = dynamic(async () => (await import("./vip")).Vip, {
   loading: () => <Loading noLogo />,
 });
+
 export function useSwitchTheme() {
   const config = useAppConfig();
 
