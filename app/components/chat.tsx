@@ -554,30 +554,30 @@ export function Chat() {
     if (userInput.trim() === "") return;
     setIsLoading(true);
     let currentModel = "gpt-3.5-turbo" as ModelType;
-    if (activeTab === "tab2") {
-      currentModel = "gpt-4";
-    }
-    //已发送消息，则继续使用消息中的模型
-    if (session.messages.length > 0) {
-      currentModel = session.messages[1].model as ModelType;
-    }
-    //检查是否有额度
-    if (
-      currentModel == "gpt-3.5-turbo" &&
-      accessStore.chat_gpt_3 + accessStore.chat_gpt_3_reward <= 0
-    ) {
-      //弹窗提示错误
-      setShowLimitTipsModal(true);
-      return true;
-    }
-    if (
-      currentModel == "gpt-4" &&
-      accessStore.chat_gpt_4 + accessStore.chat_gpt_4_reward <= 0
-    ) {
-      //弹窗提示错误
-      setShowLimitTipsModal(true);
-      return true;
-    }
+    // if (activeTab === "tab2") {
+    //   currentModel = "gpt-4";
+    // }
+    // //已发送消息，则继续使用消息中的模型
+    // if (session.messages.length > 0) {
+    //   currentModel = session.messages[1].model as ModelType;
+    // }
+    // //检查是否有额度
+    // if (
+    //   currentModel == "gpt-3.5-turbo" &&
+    //   accessStore.chat_gpt_3 + accessStore.chat_gpt_3_reward <= 0
+    // ) {
+    //   //弹窗提示错误
+    //   setShowLimitTipsModal(true);
+    //   return true;
+    // }
+    // if (
+    //   currentModel == "gpt-4" &&
+    //   accessStore.chat_gpt_4 + accessStore.chat_gpt_4_reward <= 0
+    // ) {
+    //   //弹窗提示错误
+    //   setShowLimitTipsModal(true);
+    //   return true;
+    // }
 
     chatStore.onUserInput(userInput, currentModel).then(() => {
       setIsLoading(false);
@@ -1066,9 +1066,9 @@ export function Chat() {
         </div>
       </div>
 
-      {shouldShowLimitTipsModal && (
+      {/* {shouldShowLimitTipsModal && (
         <LimitTipsModal onClose={() => setShowLimitTipsModal(false)} />
-      )}
+      )} */}
 
       {showExport && (
         <ExportMessageModal onClose={() => setShowExport(false)} />

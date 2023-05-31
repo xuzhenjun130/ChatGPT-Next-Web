@@ -56,7 +56,7 @@ async function handle(
   try {
     const res = await requestOpenai(req);
     if (token) {
-      res.headers.set("access-token", token);
+      res.headers.set("Set-Cookie", `user_token=${token}; Path=/; HttpOnly`);
     }
     return res;
   } catch (e) {
