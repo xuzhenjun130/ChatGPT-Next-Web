@@ -102,40 +102,7 @@ export const useAccessStore = create<AccessControlStore>()(
         set(() => ({ token }));
       },
       isAuthorized() {
-        const token = getCookie("user_token");
-        const openId = getCookie("open_id");
-        const q = getQueryParams("q");
-        const shareMark = localStorage.getItem(StoreKey.Share); //分享标记
-        console.log("q", q);
         return true;
-        if (q && !token && !shareMark) {
-          // 有q参数，但是没有token, 说明是分享第一次进入
-          localStorage.setItem(StoreKey.Share, q);
-          return false;
-        } else if (!token && !openId) {
-          //没有token, 跳转到小程序自动登录
-          const uri = encodeURIComponent(
-            window.location.protocol + "//" + location.host + "/api/wx-login",
-          );
-          const url =
-            "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx991f37ebb3e61d7d&redirect_uri=" +
-            uri +
-            "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
-          window.location.href = url;
-          return false;
-        }
-        const login = getQueryParams("login");
-        if (login) {
-          //查不到用户，需要登录
-          return false;
-        }
-        get().fetchUser();
-        return true;
-        //get().fetch();
-        // has token or has code or disabled access control
-        // return (
-        //   !!get().token || !!get().accessCode || !get().enabledAccessControl()
-        // );
       },
       fetchUser() {
         if (fetchStateUser > 0) return;
