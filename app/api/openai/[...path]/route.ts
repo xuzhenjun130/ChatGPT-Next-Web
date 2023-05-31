@@ -55,10 +55,15 @@ async function handle(
 
   try {
     const res = await requestOpenai(req);
+    const newHeaders = new Headers(res.headers);
     if (token) {
-      res.headers.set("Set-Cookie", `user_token=${token}; Path=/; HttpOnly`);
+      newHeaders.set("Set-Cookie", `user_token=${token}; Path=/; HttpOnly`);
     }
-    return res;
+    return new Response(res.body, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: newHeaders,
+    });
   } catch (e) {
     console.error("[OpenAI] ", e);
     return NextResponse.json(prettyObject(e));
