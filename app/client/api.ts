@@ -64,7 +64,8 @@ export class ClientApi {
       .concat([
         {
           from: "human",
-          value: "分享来自 微信公众号【code思维】",
+          value:
+            "分享来自 微信公众号【code思维】https://mp.weixin.qq.com/s/QyE_TCk_o_zQPgI1m3FlSg",
         },
         {
           from: "human",

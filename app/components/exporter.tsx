@@ -118,7 +118,7 @@ export function MessageExporter() {
   ];
   const { currentStep, setCurrentStepIndex, currentStepIndex } =
     useSteps(steps);
-  const formats = ["text", "image"] as const;
+  const formats = ["文本", "图片"] as const;
   type ExportFormat = (typeof formats)[number];
 
   const [exportConfig, setExportConfig] = useState({
@@ -204,7 +204,7 @@ export function MessageExporter() {
       </div>
       {currentStep.value === "preview" && (
         <div className={styles["message-exporter-body"]}>
-          {exportConfig.format === "text" ? (
+          {exportConfig.format === "文本" ? (
             <MarkdownPreviewer
               messages={selectedMessages}
               topic={session.topic}
@@ -264,6 +264,8 @@ export function RenderExport(props: {
 
 export function PreviewActions(props: {
   download: () => void;
+  loadingDown?: boolean;
+  loadingCopy?: boolean;
   copy: () => void;
   showCopy?: boolean;
   messages?: ChatMessage[];
@@ -305,17 +307,19 @@ export function PreviewActions(props: {
             text={Locale.Export.Copy}
             bordered
             shadow
-            icon={<CopyIcon />}
+            icon={props.loadingCopy ? <LoadingIcon /> : <CopyIcon />}
             onClick={props.copy}
           ></IconButton>
         )}
-        <IconButton
-          text={Locale.Export.Download}
-          bordered
-          shadow
-          icon={<DownloadIcon />}
-          onClick={props.download}
-        ></IconButton>
+        {!props.showCopy && (
+          <IconButton
+            text={Locale.Export.Download}
+            bordered
+            shadow
+            icon={props.loadingDown ? <LoadingIcon /> : <DownloadIcon />}
+            onClick={props.download}
+          ></IconButton>
+        )}
         <IconButton
           text={Locale.Export.Share}
           bordered
@@ -366,14 +370,21 @@ export function ImagePreviewer(props: {
   const session = chatStore.currentSession();
   const mask = session.mask;
   const config = useAppConfig();
+  const [loadingDown, setLoadingDown] = useState(false);
+  const [loadingCopy, setLoadingCopy] = useState(false);
 
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewMsgRef = useRef<HTMLDivElement>(null);
 
   const copy = () => {
     const dom = previewRef.current;
     if (!dom) return;
+    setLoadingCopy(true);
     toBlob(dom).then((blob) => {
-      if (!blob) return;
+      if (!blob) {
+        setLoadingCopy(false);
+        return;
+      }
       try {
         navigator.clipboard
           .write([
@@ -383,42 +394,76 @@ export function ImagePreviewer(props: {
           ])
           .then(() => {
             showToast(Locale.Copy.Success);
+            setLoadingCopy(false);
           });
       } catch (e) {
         console.error("[Copy Image] ", e);
         showToast(Locale.Copy.Failed);
+        setLoadingCopy(false);
       }
     });
   };
+  //是否pc微信
+  function isWeChatPC() {
+    var ua = window.navigator.userAgent.toLowerCase();
+    if (ua.indexOf("micromessenger") !== -1) {
+      if (
+        ua.indexOf("windowswechat") !== -1 ||
+        ua.indexOf("windows wechat") !== -1
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   const isMobile = useMobileScreen();
 
   const download = () => {
     const dom = previewRef.current;
     if (!dom) return;
+    setLoadingDown(true);
     toPng(dom)
       .then((blob) => {
-        if (!blob) return;
+        if (!blob) {
+          setLoadingDown(false);
+          return;
+        }
 
         if (isMobile) {
           const image = new Image();
           image.src = blob;
-          const win = window.open("");
-          win?.document.write(image.outerHTML);
+          image.style.width = "100%";
+          if (!isWeChatPC()) {
+            //手机微信打开，没有下载
+            alert("请长按下方的图片 -> 转发朋友");
+            if (previewMsgRef.current !== null) {
+              dom.replaceChild(image, previewMsgRef.current);
+            }
+          } else {
+            const win = window.open("");
+            win?.document.write(image.outerHTML);
+          }
         } else {
           const link = document.createElement("a");
           link.download = `${props.topic}.png`;
           link.href = blob;
           link.click();
         }
+        setLoadingDown(false);
       })
-      .catch((e) => console.log("[Export Image] ", e));
+      .catch((e) => {
+        console.log("[Export Image] ", e);
+        setLoadingDown(false);
+      });
   };
 
   return (
     <div className={styles["image-previewer"]}>
       <PreviewActions
         copy={copy}
+        loadingDown={loadingDown}
+        loadingCopy={loadingCopy}
         download={download}
         showCopy={!isMobile}
         messages={props.messages}
@@ -427,60 +472,55 @@ export function ImagePreviewer(props: {
         className={`${styles["preview-body"]} ${styles["default-theme"]}`}
         ref={previewRef}
       >
-        <div className={styles["chat-info"]}>
-          <div className={styles["logo"] + " no-dark"}>
-            <NextImage src={WxIcon.src} alt="logo" width={150} height={150} />
-          </div>
+        <div ref={previewMsgRef}>
+          <div className={styles["chat-info"]}>
+            <div className={styles["logo"] + " no-dark"}>
+              <NextImage src={WxIcon.src} alt="logo" width={120} height={120} />
+            </div>
 
-          <div>
-            <div className={styles["main-title"]}>code思维</div>
-            <div className={styles["sub-title"]}>微信公众号</div>
-            <div className={styles["icons"]}>
-              <ExportAvatar avatar={config.avatar} />
-              <span className={styles["icon-space"]}>&</span>
-              <ExportAvatar avatar={mask.avatar} />
+            <div className={styles["info"]}>
+              <div className={styles["chat-info-item"]}>
+                Model: {mask.modelConfig.model}
+              </div>
+              <div className={styles["chat-info-item"]}>
+                Messages: {props.messages.length}
+              </div>
+              <div className={styles["chat-info-item"]}>
+                Topic: {session.topic}
+              </div>
+              <div className={styles["chat-info-item"]}>
+                Time:{" "}
+                {new Date(
+                  props.messages.at(-1)?.date ?? Date.now(),
+                ).toLocaleString()}
+              </div>
             </div>
           </div>
-          <div>
-            <div className={styles["chat-info-item"]}>
-              Model: {mask.modelConfig.model}
-            </div>
-            <div className={styles["chat-info-item"]}>
-              Messages: {props.messages.length}
-            </div>
-            <div className={styles["chat-info-item"]}>
-              Topic: {session.topic}
-            </div>
-            <div className={styles["chat-info-item"]}>
-              Time:{" "}
-              {new Date(
-                props.messages.at(-1)?.date ?? Date.now(),
-              ).toLocaleString()}
-            </div>
-          </div>
+          {props.messages.map((m, i) => {
+            return (
+              <div
+                className={
+                  styles["message"] + " " + styles["message-" + m.role]
+                }
+                key={i}
+              >
+                <div className={styles["avatar"]}>
+                  <ExportAvatar
+                    avatar={m.role === "user" ? config.avatar : mask.avatar}
+                  />
+                </div>
+
+                <div className={styles["body"]}>
+                  <Markdown
+                    content={m.content}
+                    fontSize={config.fontSize}
+                    defaultShow
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
-        {props.messages.map((m, i) => {
-          return (
-            <div
-              className={styles["message"] + " " + styles["message-" + m.role]}
-              key={i}
-            >
-              <div className={styles["avatar"]}>
-                <ExportAvatar
-                  avatar={m.role === "user" ? config.avatar : mask.avatar}
-                />
-              </div>
-
-              <div className={styles["body"]}>
-                <Markdown
-                  content={m.content}
-                  fontSize={config.fontSize}
-                  defaultShow
-                />
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -511,6 +551,7 @@ export function MarkdownPreviewer(props: {
     <>
       <PreviewActions
         copy={copy}
+        showCopy={true}
         download={download}
         messages={props.messages}
       />
