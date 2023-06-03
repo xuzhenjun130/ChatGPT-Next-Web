@@ -118,7 +118,7 @@ export function MessageExporter() {
   ];
   const { currentStep, setCurrentStepIndex, currentStepIndex } =
     useSteps(steps);
-  const formats = ["文本", "图片"] as const;
+  const formats = ["图片", "文本"] as const;
   type ExportFormat = (typeof formats)[number];
 
   const [exportConfig, setExportConfig] = useState({
@@ -298,6 +298,7 @@ export function PreviewActions(props: {
       setShouldExport(true);
     }
   };
+  const isMobile = useMobileScreen();
 
   return (
     <>
@@ -311,7 +312,7 @@ export function PreviewActions(props: {
             onClick={props.copy}
           ></IconButton>
         )}
-        {!props.showCopy && (
+        {!isMobile && (
           <IconButton
             text={Locale.Export.Download}
             bordered
