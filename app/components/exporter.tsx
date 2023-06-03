@@ -312,15 +312,15 @@ export function PreviewActions(props: {
             onClick={props.copy}
           ></IconButton>
         )}
-        {!isMobile && (
-          <IconButton
-            text={Locale.Export.Download}
-            bordered
-            shadow
-            icon={props.loadingDown ? <LoadingIcon /> : <DownloadIcon />}
-            onClick={props.download}
-          ></IconButton>
-        )}
+
+        <IconButton
+          text={Locale.Export.Download}
+          bordered
+          shadow
+          icon={props.loadingDown ? <LoadingIcon /> : <DownloadIcon />}
+          onClick={props.download}
+        ></IconButton>
+
         <IconButton
           text={Locale.Export.Share}
           bordered
