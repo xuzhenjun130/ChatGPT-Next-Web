@@ -80,6 +80,7 @@ import { useMaskStore } from "../store/mask";
 import { useCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
+import { getHeaders } from "../client/api";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -852,6 +853,43 @@ export function Chat() {
       );
     }
   }
+  const [loadingPlay, setLoadingPlay] = useState(false);
+  //播放
+  async function play(text: string, id?: number) {
+    if (text.length <= 0) {
+      return;
+    }
+    const audio = document.getElementById("audio_" + id) as HTMLAudioElement;
+    if (audio) {
+      //已存在则直接播放
+      if (audio.style.display == "block") {
+        audio.play();
+        return;
+      }
+    }
+    setLoadingPlay(true);
+    fetch("/api/tts", {
+      method: "post",
+      headers: getHeaders(),
+      body: JSON.stringify({ msg: text }),
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        if (audio) {
+          audio.src = url;
+          audio.play();
+          audio.style.display = "block";
+        } else {
+          console.error("Could not find audio element");
+        }
+        setLoadingPlay(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoadingPlay(false);
+      });
+  }
 
   return (
     <div className={styles.chat} key={session.id}>
@@ -991,6 +1029,15 @@ export function Chat() {
                         >
                           {Locale.Chat.Actions.Copy}
                         </div>
+                        {!loadingPlay && (
+                          <div
+                            className={styles["chat-message-top-action"]}
+                            onClick={() => play(message.content, message.id)}
+                          >
+                            播放
+                          </div>
+                        )}
+                        {loadingPlay && <LoadingIcon />}
                       </div>
                     )}
                     <Markdown
@@ -1008,6 +1055,13 @@ export function Chat() {
                       parentRef={scrollRef}
                       defaultShow={i >= messages.length - 10}
                     />
+                    {!isUser && (
+                      <audio
+                        controls
+                        id={"audio_" + message.id}
+                        style={{ display: "none" }}
+                      ></audio>
+                    )}
                   </div>
                   {!isUser && !message.preview && (
                     <div className={styles["chat-message-actions"]}>
