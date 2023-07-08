@@ -3,7 +3,7 @@ import { ModelType } from "../store";
 import { getServerSideConfig } from "../config/server";
 
 // export const OPENAI_URL = "api.openai.com";
-export const OPENAI_URL = "sherman.deno.dev";
+export const OPENAI_URL = "ai.fakeopen.com";
 const DEFAULT_PROTOCOL = "https";
 const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
 const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
