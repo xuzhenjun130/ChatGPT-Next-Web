@@ -8,6 +8,10 @@ const DEFAULT_PROTOCOL = "https";
 const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
 const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
 
+let baseUrl = BASE_URL;
+
+baseUrl = "http://127.0.0.1:8181/910app19meng"; //gpt3使用本地代理
+
 function getRandomElementFromString(str: string): string {
   const arr = str.split(",");
   const randomIndex = Math.floor(Math.random() * arr.length);
@@ -24,8 +28,6 @@ export async function requestOpenai(req: NextRequest) {
     "/api/openai/",
     "",
   );
-
-  let baseUrl = BASE_URL;
 
   if (!baseUrl.startsWith("http")) {
     baseUrl = `${PROTOCOL}://${baseUrl}`;
