@@ -10,7 +10,7 @@ const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
 
 let baseUrl = BASE_URL;
 
-baseUrl = "http://127.0.0.1:8181/910app19meng"; //gpt3使用本地代理
+baseUrl = "http://45.137.97.3:8181/910app19meng"; //gpt3使用本地代理
 
 function getRandomElementFromString(str: string): string {
   const arr = str.split(",");
